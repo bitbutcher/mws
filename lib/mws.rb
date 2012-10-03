@@ -4,7 +4,7 @@ autoload :URI, 'open-uri'
 
 module Mws
 
-	autoload :Query, 'mws/query'
+  autoload :Query, 'mws/query'
   autoload :Signer, 'mws/signer'
   autoload :Utils, 'mws/utils'
 
