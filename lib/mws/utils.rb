@@ -11,9 +11,15 @@ module Mws::Utils
   #
   # @return [String] The camelized name corresponding to the provided underscored name.
   def camelize(name, uc_first=true)
-    parts = name.to_s.split('_')
+    parts = name.to_s.split '_'
     assemble = lambda { |head, tail| head + tail.capitalize }
     uc_first ? parts.inject('', &assemble) : parts.inject(&assemble)
+  end
+
+  def uri_escape(value)
+    value.gsub /([^a-zA-Z0-9_.~-]+)/ do
+      '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
+    end
   end
 
 end

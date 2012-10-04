@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "folder_exclude_patterns": [
+      ],
+      "file_exclude_patterns": [
+        "*.sublime-project*",
+        ".gitignore"
+      ]
+    }
+  ],
+  "settings": {
+    "tab_size": 2,
+    "translate_tabs_to_spaces": true
+  }
+}
