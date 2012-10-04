@@ -1,9 +1,11 @@
 autoload :Base64, 'base64'
 autoload :OpenSSL, 'openssl'
 autoload :URI, 'open-uri'
+autoload :HTTParty, 'httparty'
 
 module Mws
 
+  autoload :Connection, 'mws/connection'
   autoload :Query, 'mws/query'
   autoload :Signer, 'mws/signer'
   autoload :Utils, 'mws/utils'
