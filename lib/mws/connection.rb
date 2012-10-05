@@ -39,18 +39,6 @@ class Mws::Connection
     options[:access] ||= @access
     query = Mws::Query.new options, derive_list_ext
     signer = Mws::Signer.new method: method, host: @host, path: path, secret: @secret
-    # headers = {
-    #   'User-Agent' => 'MWS Client/0.0.1 (Language=Ruby)',
-    #   'Accept-Encoding' => 'text/xml'
-    # }
-    # unless body.nil?
-    #   headers['Content-Type'] = 'text/xml'
-    # end
-    # response = HTTParty.send method, "#{@scheme}://#{@host}#{path}?#{signer.sign query}", headers: headers, body: body
-    # raise "#{response.code}:#{response.message}" if response.parsed_response.nil?
-    # error = response.parsed_response['ErrorResponse']
-    # raise "Type: #{error['Error']['Type']}, Message: #{error['Error']['Message']}" unless error.nil?
-    # response.parsed_response["#{options[:action]}Response"]["#{options[:action]}Result"]
     response = @conn.send(method, "#{path}?#{signer.sign query}") do | request |
       unless body.nil?
         request.headers['Content-Type'] = 'text/xml'
