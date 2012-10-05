@@ -1,10 +1,9 @@
 autoload :Base64, 'base64'
 autoload :OpenSSL, 'openssl'
-autoload :URI, 'open-uri'
-autoload :HTTParty, 'httparty'
 
 module Mws
 
+  autoload :Apis, 'mws/apis'
   autoload :Connection, 'mws/connection'
   autoload :Query, 'mws/query'
   autoload :Signer, 'mws/signer'
@@ -12,5 +11,9 @@ module Mws
 
   # The current version of this ruby gem
   VERSION = '0.0.1'
+
+  def self.connect(options)
+    Connection.new options
+  end
 
 end
