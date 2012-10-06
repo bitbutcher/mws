@@ -40,18 +40,33 @@ class Mws::Connection
       req.content_type = 'text/xml'
       req.body = body
     end
-    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
-      http.request req
+    Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
+      http.request req do | res |
+        case res
+        when Net::HTTPSuccess
+          doc = Mws::Utils::pipe(
+            lambda { | writer |
+              res.read_body do | chunk |
+                writer.write chunk
+              end
+            }, 
+            lambda { | reader |
+              parser = XML::Parser.io reader
+              parser.parse
+            }
+          )
+          doc.root.namespaces.default_prefix = 'mws'
+          doc.find('/mws:ErrorResponse/mws:Error').each do | error |
+          message = []
+          error.each_element { |node| message << "#{node.name}: #{node.child}" }
+            raise message.join ", "
+          end
+          return doc.find_first "mws:#{options[:action]}Result"
+        else
+          raise "Code: #{res.code}, Message :#{res.msg}"
+        end
+      end
     end
-    raise "Code: #{res.code}, Message :#{res.msg}" if res.body.nil?
-    doc = XML::Parser.string(res.body).parse
-    doc.root.namespaces.default_prefix = 'mws'
-    doc.find('/mws:ErrorResponse/mws:Error').each do | error |
-      message = []
-      error.each_element { |node| message << "#{node.name}: #{node.child}" }
-      raise message.join ", "
-    end
-    doc.find_first "mws:#{options[:action]}Result"
   end
 
 end

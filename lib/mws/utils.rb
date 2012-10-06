@@ -22,4 +22,22 @@ module Mws::Utils
     end
   end
 
+  def pipe(with_writer, with_reader)
+    IO.pipe do | reader, writer |
+      res = nil
+      threads = [
+        Thread.new(reader) do | reader |
+          res = with_reader.call reader
+          reader.close
+        end,
+        Thread.new(writer) do | writer |
+          with_writer.call writer
+          writer.close
+        end
+      ]
+      threads.each { | thread | thread.join }
+      res
+    end
+  end
+
 end
