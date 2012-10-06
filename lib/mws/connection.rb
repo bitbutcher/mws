@@ -1,5 +1,6 @@
-require 'faraday'
-require 'faraday_middleware'
+require 'uri'
+require 'net/http'
+require 'xml'
 
 class Mws::Connection
 
@@ -11,14 +12,6 @@ class Mws::Connection
     @merchant = options[:merchant]
     @access = options[:access]
     @secret = options[:secret]
-    @conn = Faraday.new(url: "#{@scheme}://#{@host}") do | faraday |
-      faraday.adapter Faraday.default_adapter
-      faraday.headers = {
-        'User-Agent' => 'MWS Client/0.0.1 (Language=Ruby)',
-        'Accept-Encoding' => 'text/xml'
-      }
-      faraday.response :xml, content_type: /\bxml$/
-    end
     @orders = Mws::Apis::Orders.new self
     @feeds = Mws::Apis::Feeds.new self
   end
@@ -39,16 +32,26 @@ class Mws::Connection
     options[:access] ||= @access
     query = Mws::Query.new options, derive_list_ext
     signer = Mws::Signer.new method: method, host: @host, path: path, secret: @secret
-    response = @conn.send(method, "#{path}?#{signer.sign query}") do | request |
-      unless body.nil?
-        request.headers['Content-Type'] = 'text/xml'
-        req.body = body
-      end
+    uri = URI("#{@scheme}://#{@host}#{path}?#{signer.sign query}")
+    req = Net::HTTP.const_get(method.to_s.capitalize).new (uri.request_uri)
+    req['User-Agent'] = 'MWS Client/0.0.1 (Language=Ruby)'
+    req['Accept-Encoding'] = 'text/xml'
+    if req.request_body_permitted? and body
+      req.content_type = 'text/xml'
+      req.body = body
     end
-    raise "#{response.code}:#{response.message}" if response.body.nil?
-    error = response.body['ErrorResponse']
-    raise "Type: #{error['Error']['Type']}, Message: #{error['Error']['Message']}" unless error.nil?
-    response.body["#{options[:action]}Response"]["#{options[:action]}Result"]
+    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
+      http.request req
+    end
+    raise "Code: #{res.code}, Message :#{res.msg}" if res.body.nil?
+    doc = XML::Parser.string(res.body).parse
+    doc.root.namespaces.default_prefix = 'mws'
+    doc.find('/mws:ErrorResponse/mws:Error').each do | error |
+      message = []
+      error.each_element { |node| message << "#{node.name}: #{node.child}" }
+      raise message.join ", "
+    end
+    doc.find_first "mws:#{options[:action]}Result"
   end
 
 end

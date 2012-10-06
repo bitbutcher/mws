@@ -7,8 +7,10 @@ class Mws::Apis::Orders
   def list(options={})
     options[:version] ||= '2011-01-01'
     options[:action] = 'ListOrders'
-    response = @connection.get(:orders, options)
-    response['Orders'] || []
+    doc = @connection.get(:orders, options)
+    doc.find('mws:Orders/mws:Order').map do | node |
+      'Someday this will be an Order'
+    end
   end
 
 end
