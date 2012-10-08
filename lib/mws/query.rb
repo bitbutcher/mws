@@ -12,7 +12,7 @@ class Mws::Query
     @params = Hash[options.inject({}) do | params, entry |
       key = normalize_key entry.first
       if entry.last.respond_to? :each_with_index
-        derive_list_ext ||= lambda { | key | ".#{key.split('_').last.capitalize}" } 
+        derive_list_ext ||= ->(key) { ".#{key.split('_').last.capitalize}" }
         ext = derive_list_ext.call entry.first.to_s
         entry.last.each_with_index do | value, index |
           params["#{key}#{ext}.#{index + 1}"] = normalize_val value

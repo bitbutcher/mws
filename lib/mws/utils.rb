@@ -12,32 +12,28 @@ module Mws::Utils
   # @return [String] The camelized name corresponding to the provided underscored name.
   def camelize(name, uc_first=true)
     parts = name.to_s.split '_'
-    assemble = lambda { |head, tail| head + tail.capitalize }
+    assemble = ->(head, tail) { head + tail.capitalize }
     uc_first ? parts.inject('', &assemble) : parts.inject(&assemble)
   end
 
   def uri_escape(value)
-    value.gsub /([^a-zA-Z0-9_.~-]+)/ do
-      '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
+    value.gsub /([^a-zA-Z0-9_.~-]+)/ do | it |
+      '%' + it.unpack('H2' * it.bytesize).join('%').upcase
     end
   end
 
   def pipe(with_writer, with_reader)
-    IO.pipe do | reader, writer |
-      res = nil
-      threads = [
-        Thread.new(reader) do | reader |
-          res = with_reader.call reader
-          reader.close
-        end,
-        Thread.new(writer) do | writer |
-          with_writer.call writer
-          writer.close
-        end
-      ]
-      threads.each { | thread | thread.join }
-      res
+    reader, writer = IO.pipe
+    fork do
+      reader.close
+      with_writer.call writer
+      writer.close
     end
+    writer.close
+    res = with_reader.call reader
+    Process.wait
+    reader.close
+    res
   end
 
 end

@@ -43,17 +43,12 @@ class Mws::Connection
     Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
       http.request req do | res |
         case res
-        when Net::HTTPSuccess
+        when Net::HTTPSuccess, Net::HTTPBadRequest
           doc = Mws::Utils::pipe(
-            lambda { | writer |
-              res.read_body do | chunk |
-                writer.write chunk
-              end
+            ->(writer) {
+              res.read_body { | chunk | writer.write chunk }
             }, 
-            lambda { | reader |
-              parser = XML::Parser.io reader
-              parser.parse
-            }
+            ->(reader) { XML::Parser.io(reader).parse }
           )
           doc.root.namespaces.default_prefix = 'mws'
           doc.find('/mws:ErrorResponse/mws:Error').each do | error |
