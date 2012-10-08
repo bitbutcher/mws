@@ -1,6 +1,6 @@
 require 'uri'
 require 'net/http'
-require 'xml'
+require 'nokogiri'
 
 class Mws::Connection
 
@@ -44,14 +44,13 @@ class Mws::Connection
       http.request req
     end
     raise "Code: #{res.code}, Message :#{res.msg}" if res.body.nil?
-    doc = XML::Parser.string(res.body).parse
-    doc.root.namespaces.default_prefix = 'mws'
-    doc.find('/mws:ErrorResponse/mws:Error').each do | error |
+    doc = Nokogiri::XML(res.body)
+    doc.xpath('/xmlns:ErrorResponse/xmlns:Error').each do | error |
       message = []
-      error.each_element { |node| message << "#{node.name}: #{node.child}" }
+      error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
       raise message.join ", "
     end
-    doc.find_first "mws:#{options[:action]}Result"
+    doc.xpath("/xmlns:#{options[:action]}Response/xmlns:#{options[:action]}Result").first
   end
 
 end
