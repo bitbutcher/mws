@@ -6,6 +6,7 @@ module Mws
   autoload :Apis, 'mws/apis'
   autoload :Connection, 'mws/connection'
   autoload :Query, 'mws/query'
+  autoload :Serializer, 'mws/serializer'
   autoload :Signer, 'mws/signer'
   autoload :Utils, 'mws/utils'
 
