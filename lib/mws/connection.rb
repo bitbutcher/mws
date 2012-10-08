@@ -32,9 +32,13 @@ class Mws::Connection
     options[:access] ||= @access
     query = Mws::Query.new options, derive_list_ext
     signer = Mws::Signer.new method: method, host: @host, path: path, secret: @secret
-    uri = URI("#{@scheme}://#{@host}#{path}?#{signer.sign query}")
+    parse response_for(method, path, signer.sign(query), body), options[:action]
+  end
+
+  def response_for(method, path, query, body)
+    uri = URI("#{@scheme}://#{@host}#{path}?#{query}")
     req = Net::HTTP.const_get(method.to_s.capitalize).new (uri.request_uri)
-    req['User-Agent'] = 'MWS Client/0.0.1 (Language=Ruby)'
+    req['User-Agent'] = 'MWS Connect/0.0.1 (Language=Ruby)'
     req['Accept-Encoding'] = 'text/xml'
     if req.request_body_permitted? and body
       req.content_type = 'text/xml'
@@ -43,14 +47,18 @@ class Mws::Connection
     res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
       http.request req
     end
-    raise "Code: #{res.code}, Message :#{res.msg}" if res.body.nil?
-    doc = Nokogiri::XML(res.body)
+    raise "Code: #{res.code}, Message: #{res.msg}" if res.body.nil?
+    res.body
+  end
+
+  def parse(body, action)
+    doc = Nokogiri::XML(body)
     doc.xpath('/xmlns:ErrorResponse/xmlns:Error').each do | error |
       message = []
       error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
       raise message.join ", "
     end
-    doc.xpath("/xmlns:#{options[:action]}Response/xmlns:#{options[:action]}Result").first
+    doc.xpath("/xmlns:#{action}Response/xmlns:#{action}Result").first
   end
 
 end
