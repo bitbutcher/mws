@@ -1,6 +1,6 @@
 require 'uri'
 require 'net/http'
-require 'nokogiri'
+require 'xml'
 
 class Mws::Connection
 
@@ -52,13 +52,14 @@ class Mws::Connection
   end
 
   def parse(body, action)
-    doc = Nokogiri::XML(body)
-    doc.xpath('/xmlns:ErrorResponse/xmlns:Error').each do | error |
+    doc = XML::Parser.string(body).parse
+    doc.root.namespaces.default_prefix = 'mws'
+    doc.find('/mws:ErrorResponse/mws:Error').each do | error |
       message = []
-      error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
+      error.each_element { |node| message << "#{node.name}: #{node.child}" }
       raise message.join ", "
     end
-    doc.xpath("/xmlns:#{action}Response/xmlns:#{action}Result").first
+    doc.find_first "mws:#{action}Result"
   end
 
 end

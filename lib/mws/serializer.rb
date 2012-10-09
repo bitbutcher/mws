@@ -33,6 +33,7 @@ class Mws::Serializer
   end
 
   private
+  
   def xml_node_to_hash(node, context=nil) 
     if node.element?
       if node.children? 

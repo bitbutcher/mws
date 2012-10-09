@@ -8,7 +8,7 @@ class Mws::Apis::Orders
     options[:version] ||= '2011-01-01'
     options[:action] = 'ListOrders'
     doc = @connection.get(:orders, options)
-    doc.xpath('xmlns:Orders/xmlns:Order').map do | node |
+    doc.find('mws:Orders/mws:Order').map do | node |
       'Someday this will be an Order'
     end
   end
