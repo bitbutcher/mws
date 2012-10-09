@@ -16,6 +16,14 @@ module Mws::Utils
     uc_first ? parts.inject('', &assemble) : parts.inject(&assemble)
   end
 
+  def underscore(name)
+    name.gsub(/::/, '/')
+      .gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+      .gsub(/([a-z\d])([A-Z])/,'\1_\2')
+      .tr("-", "_")
+      .downcase
+  end
+
   def uri_escape(value)
     value.gsub /([^a-zA-Z0-9_.~-]+)/ do
       '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
