@@ -16,7 +16,11 @@ class Mws::Serializer
         builder.send(element) { |b| xml_for(value, b, path) }
       elsif value.respond_to? :each
         value.each do | val |
-          builder.send(element) { |b| xml_for(val, b, path)}
+          if val.respond_to? :keys
+            builder.send(element) { |b| xml_for(val, b, path)}
+          else
+            builder.send element, val      
+          end
         end
       else
         builder.send element, value
