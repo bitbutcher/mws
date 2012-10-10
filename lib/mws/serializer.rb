@@ -4,18 +4,22 @@ class Mws::Serializer
     @exceptions = exceptions
   end
 
+  def proceed(data, builder, path)
+    data.each do | key, value |
+      xml_for(key, value, builder, path)
+    end
+  end
+
   def xml_for(name, data, builder, context=nil)
     element = Mws::Utils.camelize(name)
     path = path_for name, context
     exception = @exceptions[path]
     if exception
-      exception.first.call(name, data, builder, path)
+      instance_exec name, data, builder, path, &exception.first      
     else
       if data.respond_to? :keys
         builder.send(element) do | b |
-          data.each do | key, value |
-            xml_for(key, value, b, path)
-          end
+          proceed(data, b, path)
         end
       elsif data.respond_to? :each
         data.each { |value| xml_for(name, value, builder, path) }
@@ -34,7 +38,7 @@ class Mws::Serializer
       path = path_for name, context
       exception = @exceptions[path]
       delegate = exception ? exception.last : method(:hash_for)
-      content = delegate.call element, path
+      content = instance_exec element, path, &delegate
       if res.include? name
         res[name] = [ res[name] ] unless res[name].instance_of? Array
         res[name] << content
