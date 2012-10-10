@@ -5,14 +5,14 @@ class Mws::Query
   def initialize(options, derive_list_ext=nil)
     options[:aws_access_key_id] ||= options.delete :access
     options[:seller_id] ||= options.delete(:merchant) || options.delete(:seller)
-    options[:marketplace_id] ||= [ options.delete(:markets) || options.delete(:market) || 'ATVPDKIKX0DER' ].flatten
+    options[:marketplace_id] ||= [ options.delete(:markets) || options.delete(:market) ].flatten.compact
     options[:signature_method] ||= 'HmacSHA256'
     options[:signature_version] ||= '2'
     options[:timestamp] ||= Time.now.iso8601
     @params = Hash[options.inject({}) do | params, entry |
       key = normalize_key entry.first
       if entry.last.respond_to? :each_with_index
-        derive_list_ext ||= lambda { | key | ".#{key.split('_').last.capitalize}" } 
+        derive_list_ext ||= lambda { | key | "List.#{key.split('_').last.capitalize}" } 
         ext = derive_list_ext.call entry.first.to_s
         entry.last.each_with_index do | value, index |
           params["#{key}#{ext}.#{index + 1}"] = normalize_val value

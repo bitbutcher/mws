@@ -16,18 +16,17 @@ class Mws::Connection
     @feeds = Mws::Apis::Feeds.new self
   end
 
-  def get(endpoint, options, derive_list_ext=nil)
-    request(:get, endpoint, nil, options, derive_list_ext)
+  def get(path, options, derive_list_ext=nil)
+    request(:get, path, nil, options, derive_list_ext)
   end
 
-  def post(endpoint, body, options, derive_list_ext=nil)
-    request(:post, endpoint, body, options, derive_list_ext)
+  def post(path, body, options, derive_list_ext=nil)
+    request(:post, path, body, options, derive_list_ext)
   end
 
   private
 
-  def request(method, endpoint, body, options, derive_list_ext)
-    path = "/#{Mws::Utils.camelize endpoint}/#{options[:version]}"
+  def request(method, path, body, options, derive_list_ext)
     options[:merchant] ||= @merchant
     options[:access] ||= @access
     query = Mws::Query.new options, derive_list_ext
