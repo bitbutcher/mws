@@ -1,37 +1,42 @@
 require 'uri'
 require 'net/http'
 require 'nokogiri'
+require 'digest/md5'
 
 class Mws::Connection
 
   attr_reader :orders, :feeds
 
-  def initialize(options)
-    @scheme = options[:scheme] || 'https'
-    @host = options[:host] || 'mws.amazonservices.com'
-    @merchant = options[:merchant]
-    @access = options[:access]
-    @secret = options[:secret]
+  def initialize(overrides)
+    @scheme = overrides[:scheme] || 'https'
+    @host = overrides[:host] || 'mws.amazonservices.com'
+    @merchant = overrides[:merchant]
+    @access = overrides[:access]
+    @secret = overrides[:secret]
     @orders = Mws::Apis::Orders.new self
     @feeds = Mws::Apis::Feeds.new self
   end
 
-  def get(path, options, derive_list_ext=nil)
-    request(:get, path, nil, options, derive_list_ext)
+  def get(path, params, overrides)
+    request(:get, path, params, nil, overrides)
   end
 
-  def post(path, body, options, derive_list_ext=nil)
-    request(:post, path, body, options, derive_list_ext)
+  def post(path, params, body, overrides)
+    request(:post, path, params, body, overrides)
   end
 
   private
 
-  def request(method, path, body, options, derive_list_ext)
-    options[:merchant] ||= @merchant
-    options[:access] ||= @access
-    query = Mws::Query.new options, derive_list_ext
+  def request(method, path, params, body, overrides)
+    query = Mws::Query.new({
+      action: overrides[:action],
+      version: overrides[:version],
+      merchant: @merchant,
+      access: @access,
+      list_pattern: overrides[:list_pattern]
+    }.merge(params))
     signer = Mws::Signer.new method: method, host: @host, path: path, secret: @secret
-    parse response_for(method, path, signer.sign(query), body), options[:action]
+    parse response_for(method, path, signer.sign(query), body), overrides
   end
 
   def response_for(method, path, query, body)
@@ -41,6 +46,7 @@ class Mws::Connection
     req['Accept-Encoding'] = 'text/xml'
     if req.request_body_permitted? and body
       req.content_type = 'text/xml'
+      req['Content-MD5'] = Digest::MD5.base64digest(body).strip
       req.body = body
     end
     res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
@@ -50,14 +56,19 @@ class Mws::Connection
     res.body
   end
 
-  def parse(body, action)
+  def parse(body, overrides)
     doc = Nokogiri::XML(body)
-    doc.xpath('/xmlns:ErrorResponse/xmlns:Error').each do | error |
+    doc.remove_namespaces!
+    puts doc.to_xml
+    puts "------------------------======----------------------------"
+    doc.xpath('/ErrorResponse/Error').each do | error |
       message = []
       error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
       raise message.join ", "
     end
-    doc.xpath("/xmlns:#{action}Response/xmlns:#{action}Result").first
+    result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
+    puts result
+    result
   end
 
 end

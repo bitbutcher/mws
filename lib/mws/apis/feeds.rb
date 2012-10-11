@@ -7,31 +7,32 @@ class Mws::Apis::Feeds
   end
 
   def get(id)
-
+    doc = @connection.get('/', { feed_submission_id: id }, @defaults.merge(
+      action: 'GetFeedSubmissionResult',
+      xpath: 'AmazonEnvelope/Message/ProcessingReport'
+    ))
+    doc.xpath('FeedSubmissionInfo').map do | node |
+      
+    end
   end
 
-  def submit(body, options)
-
+  def submit(body, params)
+    doc = @connection.post('/', params, body, @defaults.merge( action: 'SubmitFeed'))
   end
 
   def cancel(options={})
 
   end
 
-  def list(options={})
-    options[:version] ||= @defaults[:version]
-    options[:action] = 'GetFeedSubmissionList'
-    doc = @connection.get('/', options, lambda { | key | 
-      "List.#{key.split('_').last.capitalize}"
-    })
-    puts doc.to_xml
-    doc.xpath('xmlns:FeedSubmissionInfo').map do | node |
+  def list(params={})
+    doc = @connection.get('/', params, @defaults.merge(action: 'GetFeedSubmissionList'))
+    doc.xpath('FeedSubmissionInfo').map do | node |
       'Someday this will be an FeedSubmission'
     end
   end
 
-  def count(options={})
-
+  def count()
+    @connection.get('/', {}, @defaults.merge(action: 'GetFeedSubmissionCount')).xpath('Count').first.text.to_i
   end
 
 end
