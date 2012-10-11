@@ -1,19 +1,20 @@
+require 'hashie'
+
 class Mws::Apis::Feeds
 
   def initialize(connection, defaults={})
     @connection = connection
     defaults[:version] ||= '2009-01-01'
     @defaults = defaults
+    @serializer = Mws::Serializer.new
   end
 
   def get(id)
-    doc = @connection.get('/', { feed_submission_id: id }, @defaults.merge(
+    node = @connection.get('/', { feed_submission_id: id }, @defaults.merge(
       action: 'GetFeedSubmissionResult',
       xpath: 'AmazonEnvelope/Message/ProcessingReport'
     ))
-    doc.xpath('FeedSubmissionInfo').map do | node |
-      
-    end
+    Hashie::Mash.new @serializer.hash_for(node, :processing_report)
   end
 
   def submit(body, params)
@@ -27,7 +28,7 @@ class Mws::Apis::Feeds
   def list(params={})
     doc = @connection.get('/', params, @defaults.merge(action: 'GetFeedSubmissionList'))
     doc.xpath('FeedSubmissionInfo').map do | node |
-      'Someday this will be an FeedSubmission'
+      Hashie::Mash.new @serializer.hash_for(node, :feed_submission)
     end
   end
 
