@@ -14,9 +14,11 @@ Gem::Specification.new do |gem|
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.test_files    = gem.files.grep(%r{^(test|specs?|feat(ures?)?)/})
   gem.require_paths = ['lib']
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'cucumber'
+  gem.add_development_dependency 'activesupport'
   gem.add_dependency 'nokogiri'
   gem.add_dependency 'hashie'
 end

@@ -16,7 +16,7 @@ class Mws::Query
     list_pattern = options.delete(:list_pattern) 
 
     @params = Hash[options.inject({}) do | params, entry |
-      puts "Entry: #{entry.inspect}"
+      # puts "Entry: #{entry.inspect}"
       key = normalize_key entry.first
       if entry.last.respond_to? :each_with_index
         entry.last.each_with_index do | value, index |
