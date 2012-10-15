@@ -17,9 +17,6 @@ class Mws::Apis::Feeds::Api
 
   def submit(body, params)
     doc = @connection.post('/', params, body, @defaults.merge( action: 'SubmitFeed'))
-    doc.xpath('FeedSubmissionInfo').map do | node |
-      puts "Node: #{node}"
-    end
     Mws::Apis::Feeds::SubmissionInfo.from_xml doc.xpath('FeedSubmissionInfo').first
   end
 
@@ -28,6 +25,7 @@ class Mws::Apis::Feeds::Api
   end
 
   def list(params={})
+    params[:feed_submission_id] ||= params.delete(:ids) || [ params.delete(:id) ].flatten.compact
     doc = @connection.get('/', params, @defaults.merge(action: 'GetFeedSubmissionList'))
     doc.xpath('FeedSubmissionInfo').map do | node |
       Mws::Apis::Feeds::SubmissionInfo.from_xml node

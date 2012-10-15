@@ -33,7 +33,7 @@ class Mws::Connection
       version: overrides[:version],
       merchant: @merchant,
       access: @access,
-      list_pattern: overrides[:list_pattern]
+      list_pattern: overrides.delete(:list_pattern)
     }.merge(params))
     signer = Mws::Signer.new method: method, host: @host, path: path, secret: @secret
     parse response_for(method, path, signer.sign(query), body), overrides
@@ -59,15 +59,15 @@ class Mws::Connection
   def parse(body, overrides)
     doc = Nokogiri::XML(body)
     doc.remove_namespaces!
-    puts doc.to_xml
-    puts "------------------------======----------------------------"
+    # puts doc.to_xml
+    # puts "------------------------======----------------------------"
     doc.xpath('/ErrorResponse/Error').each do | error |
       message = []
       error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
       raise message.join ", "
     end
     result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
-    puts result
+    # puts result
     result
   end
 

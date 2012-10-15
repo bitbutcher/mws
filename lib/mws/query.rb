@@ -6,17 +6,15 @@ class Mws::Query
     options = {
       signature_method: 'HmacSHA256',
       signature_version: '2',
-      timestamp: Time.now.iso8601,
-      list_pattern: '%{key}List.%{ext}.%<index>d'
+      timestamp: Time.now.iso8601
     }.merge overrides
 
     options[:aws_access_key_id] ||= options.delete :access
     options[:seller_id] ||= options.delete(:merchant) || options.delete(:seller)
     options[:marketplace_id] ||= options.delete(:markets) || []
-    list_pattern = options.delete(:list_pattern) 
-
+    list_pattern = options.delete(:list_pattern) || '%{key}List.%{ext}.%<index>d'
+    
     @params = Hash[options.inject({}) do | params, entry |
-      # puts "Entry: #{entry.inspect}"
       key = normalize_key entry.first
       if entry.last.respond_to? :each_with_index
         entry.last.each_with_index do | value, index |
