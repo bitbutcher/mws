@@ -30,4 +30,10 @@ module Mws::Utils
     end
   end
 
+  def require(options, name)
+    value = options[name]
+    raise "Parameter #{name} is required!" if value.nil?
+    value
+  end
+
 end

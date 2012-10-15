@@ -14,7 +14,7 @@ class Mws::Connection
     @access = overrides[:access]
     @secret = overrides[:secret]
     @orders = Mws::Apis::Orders.new self
-    @feeds = Mws::Apis::Feeds.new self
+    @feeds = Mws::Apis::Feeds::Api.new self
   end
 
   def get(path, params, overrides)
