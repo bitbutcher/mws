@@ -23,26 +23,34 @@ module Mws
       expect { Enum.new }.to raise_error NoMethodError
     end
 
-    it 'should construct a pseudo-constant accessor for each provided symbol' do
-      options.each do | key, value |
-        OrderStatus.send(key.to_s.upcase.to_sym).should_not be nil
+    describe '.for' do
+      it 'should construct a pseudo-constant accessor for each provided symbol' do
+        options.each do | key, value |
+          OrderStatus.send(key.to_s.upcase.to_sym).should_not be nil
+        end
+      end
+
+      it 'should not share pseudo-constants between enumeration instances' do
+        EnumOne = Enum.for( foo: 'Foo', bar: 'Bar', baz: 'Baz' )
+        EnumTwo = Enum.for( bar: 'BAR', baz: 'BAZ', quk: 'QUK' )
+        expect { EnumOne.QUK }.to raise_error NoMethodError
+        expect { EnumTwo.FOO }.to raise_error NoMethodError
+        EnumOne.BAR.should_not == EnumTwo.BAR
       end
     end
 
-    it 'should not share pseudo-constants between enumeration instances' do
-      EnumOne = Enum.for( foo: 'Foo', bar: 'Bar', baz: 'Baz' )
-      EnumTwo = Enum.for( bar: 'BAR', baz: 'BAZ', quk: 'QUK' )
-      expect { EnumOne.QUK }.to raise_error NoMethodError
-      expect { EnumTwo.FOO }.to raise_error NoMethodError
-      EnumOne.BAR.should_not == EnumTwo.BAR
-    end
+    describe '#for' do
+      it 'should be able to find an enum entry from a symbol' do
+        OrderStatus.for(:pending).should == OrderStatus.PENDING
+      end
 
-    it 'should be able to find an enum entry from a symbol' do
-      OrderStatus.for(:pending).should == OrderStatus.PENDING
-    end
+      it 'should be able to find an enum entry from a string' do
+        OrderStatus.for('Pending').should == OrderStatus.PENDING
+      end
 
-    it 'should be able to find an enum entry from a string' do
-      OrderStatus.for('Pending').should == OrderStatus.PENDING
+      it 'should be able to find an enum entry from an enum entry' do
+        OrderStatus.for(OrderStatus.PENDING).should == OrderStatus.PENDING
+      end
     end
 
     it 'should be able to provide a symbol for an entry' do
@@ -59,6 +67,7 @@ module Mws
       OrderStatus.for('PartiallyShipped').should == OrderStatus.UNSHIPPED
     end
 
+    
   end
 
 end

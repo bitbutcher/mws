@@ -1,10 +1,42 @@
 class Mws::Apis::Feeds::Feed
 
+  Type = Mws::Enum.for(
+    product: '_POST_PRODUCT_DATA_', 
+    product_relationship: '_POST_PRODUCT_RELATIONSHIP_DATA_', 
+    item: '_POST_ITEM_DATA_', 
+    product_overrides: '_POST_PRODUCT_OVERRIDES_DATA_', 
+    product_image: '_POST_PRODUCT_IMAGE_DATA_', 
+    product_pricing: '_POST_PRODUCT_PRICING_DATA_', 
+    inventory_availability: '_POST_INVENTORY_AVAILABILITY_DATA_', 
+    order_acknowledgement: '_POST_ORDER_ACKNOWLEDGEMENT_DATA_', 
+    order_fufillment: '_POST_ORDER_FULFILLMENT_DATA_', 
+    fulfillment_order_request: '_POST_FULFILLMENT_ORDER_REQUEST_DATA_', 
+    fulfillment_order_cancellation: '_POST_FULFILLMENT_ORDER_CANCELLATION_REQUEST_DATA'
+  )
+
+  OperationType = Mws::Enum.for update: 'Update', delete: 'Delete', partial_update: 'PartialUpdate'
+
+  MessageType = Mws::Enum.for(
+    fufillment_center: 'FulfillmentCenter',
+    inventory: 'Inventory', 
+    listings: 'Listings', 
+    order_acknowledgement: 'OrderAcknowledgement', 
+    order_adjustment: 'OrderAdjustment', 
+    order_fulfillment: 'OrderFulfillment', 
+    override: 'Override', 
+    price: 'Price',
+    processing_report: 'ProcessingReport',
+    product: 'Product',
+    product_image: 'ProductImage',
+    relationship: 'Relationship',
+    settlement_report: 'SettlementReport'
+  )
+
   attr_accessor :merchant_id, :message_type, :purge_and_replace, :messages
 
   def initialize(options={}, &block)
     @merchant = options[:merchant]
-    @message_type = options[:message_type]
+    @message_type = MessageType.for(options[:message_type]).val
     @purge_and_replace = options[:purge_and_replace] || false
 
     @messages = []
@@ -38,7 +70,7 @@ class Mws::Apis::Feeds::Feed
 
     def initialize(id, operation_type, body_builder)
       @id = id
-      @operation_type = operation_type
+      @operation_type = OperationType.for(operation_type).val
       @body_builder = body_builder
     end
 

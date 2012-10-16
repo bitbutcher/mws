@@ -19,6 +19,7 @@ module  Mws
     end
 
     def for(it)
+      return it if it.instance_of? EnumEntry 
       @reverse[it]
     end
 
