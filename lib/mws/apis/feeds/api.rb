@@ -1,10 +1,13 @@
 class Mws::Apis::Feeds::Api
 
+  attr_accessor :products
+
   def initialize(connection, defaults={})
     @connection = connection
     defaults[:version] ||= '2009-01-01'
     @defaults = defaults
-    @serializer = Mws::Serializer.new
+    
+    @products = Mws::Apis::Feeds::Products.new self, defaults[:merchant]
   end
 
   def get(id)
