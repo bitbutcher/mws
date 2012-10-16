@@ -20,7 +20,7 @@ module Mws
       element = Mws::Utils.camelize(name)
       path = path_for name, context
       exception = @exceptions[path]
-      if exception
+      if exception and exception.include? :to
         instance_exec name, data, builder, path, &exception[:to]      
       else
         if data.respond_to? :keys
@@ -43,7 +43,7 @@ module Mws
         name = Mws::Utils.underscore(element.name).to_sym
         path = path_for name, context
         exception = @exceptions[path]
-        delegate = exception ? exception[:from] : method(:hash_for)
+        delegate = exception and exception.include?(:from) ? exception[:from] : method(:hash_for)
         content = instance_exec element, path, &delegate
         if res.include? name
           res[name] = [ res[name] ] unless res[name].instance_of? Array
@@ -73,11 +73,11 @@ module Mws
     end
 
     def to(&block)
-      exception[:to] = block
+      _exception[:to] = block
     end
 
-    def from(proc)
-      exception[:from] = block
+    def from(&block)
+      _exception[:from] = block
     end
 
     def method_missing(method, *args, &block)
@@ -88,7 +88,7 @@ module Mws
 
     private
 
-    def exception
+    def _exception
       @exceptions[@context] ||= {}
     end
 
