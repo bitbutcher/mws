@@ -2,18 +2,9 @@ module  Mws
 
   class Enum
 
-    def self.for_hash(h)
-      it = Enum.new(h)
-      eigenclass = class << it
-        self
-      end
-      h.each do | key, value |
-        eigenclass.send(:define_method, key.to_s.upcase.to_sym) do
-          it.entry_for key
-        end 
-      end
-      it
-    end
+    private :initialize
+
+    private_class_method :new
 
     def initialize(entries)
       @reverse = {}
@@ -27,7 +18,7 @@ module  Mws
       end
     end
 
-    def entry_for(it)
+    def for(it)
       @reverse[it]
     end
 
@@ -37,6 +28,19 @@ module  Mws
 
     def val(sym)
      entry_for(sym).val
+    end
+
+    def self.for(h)
+      it = new(h)
+      eigenclass = class << it
+        self
+      end
+      h.each do | key, value |
+        eigenclass.send(:define_method, key.to_s.upcase.to_sym) do
+          it.for key
+        end 
+      end
+      it
     end
 
   end
