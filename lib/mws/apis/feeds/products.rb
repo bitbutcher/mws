@@ -30,8 +30,7 @@ class Mws::Apis::Feeds::Products
     end
   end
 
-  def add(products)
-    products = [ products ].flatten
+  def add(*products)
     product_serializer = @product_serializer
     feed = Mws::Apis::Feeds::Feed.new merchant: @merchant, message_type: :product do
       products.each do | product |
@@ -40,6 +39,7 @@ class Mws::Apis::Feeds::Products
         end
       end
     end
+    puts feed.xml_for
     @feeds_api.submit(feed.xml_for, feed_type: :product, purge_and_replace: false).id
   end
 

@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 class Mws::Apis::Feeds::Feed
 
   Type = Mws::Enum.for(

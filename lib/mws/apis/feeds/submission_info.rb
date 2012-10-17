@@ -1,26 +1,28 @@
 class Mws::Apis::Feeds::SubmissionInfo
   
+  private :initialize
+
+  private_class_method :new
+
   Status = Mws::Enum.for done: '_DONE_', submitted: '_SUBMITTED_', in_progress: '_IN_PROGRESS_', cancelled: '_CANCELLED_'
 
-  attr_accessor :id, :feed_type, :status, :submitted_timestamp, :started_timestamp, :completed_timestamp 
+  attr_accessor :id, :type, :status, :submitted, :started, :completed
 
-  def initialize
-    yield self if block_given?
+  def initialize(node)
+    @id = node.xpath('FeedSubmissionId').first.text.to_s
+    @type = Mws::Apis::Feeds::Feed::Type.for(node.xpath('FeedType').first.text).sym
+    @status = Status.for(node.xpath('FeedProcessingStatus').first.text).sym
+    @submitted = Time.parse(node.xpath('SubmittedDate').first.text.to_s)
+    node.xpath('StartedProcessingDate').each do | node |
+      @started = Time.parse(node.text.to_s)  
+    end
+    node.xpath('CompletedProcessingDate').each do | node |
+      @completed = Time.parse(node.text.to_s)
+    end
   end
 
   def self.from_xml(node)
-    new do | info |
-      info.id = node.xpath('FeedSubmissionId').first.text.to_s
-      info.feed_type = Mws::Apis::Feeds::Feed::Type.for(node.xpath('FeedType').first.text).sym
-      info.status = Status.for(node.xpath('FeedProcessingStatus').first.text).sym
-      info.submitted_timestamp = Time.parse(node.xpath('SubmittedDate').first.text.to_s)
-      node.xpath('StartedProcessingDate').each do | node |
-        info.started_timestamp = Time.parse(node.text.to_s)  
-      end
-      node.xpath('CompletedProcessingDate').each do | node |
-        info.completed_timestamp = Time.parse(node.text.to_s)
-      end
-    end
+    new node
   end 
 
   def ==(another)

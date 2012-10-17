@@ -66,7 +66,6 @@ module Mws
       OrderStatus.for('Unshipped').should == OrderStatus.UNSHIPPED
       OrderStatus.for('PartiallyShipped').should == OrderStatus.UNSHIPPED
     end
-
     
   end
 
