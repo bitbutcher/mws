@@ -23,7 +23,8 @@ module Mws
       expect { Enum.new }.to raise_error NoMethodError
     end
 
-    describe '.for' do
+    context '.for' do
+
       it 'should construct a pseudo-constant accessor for each provided symbol' do
         options.each do | key, value |
           OrderStatus.send(key.to_s.upcase.to_sym).should_not be nil
@@ -37,9 +38,11 @@ module Mws
         expect { EnumTwo.FOO }.to raise_error NoMethodError
         EnumOne.BAR.should_not == EnumTwo.BAR
       end
+
     end
 
-    describe '#for' do
+    context '#for' do
+
       it 'should be able to find an enum entry from a symbol' do
         OrderStatus.for(:pending).should == OrderStatus.PENDING
       end
@@ -51,6 +54,7 @@ module Mws
       it 'should be able to find an enum entry from an enum entry' do
         OrderStatus.for(OrderStatus.PENDING).should == OrderStatus.PENDING
       end
+      
     end
 
     it 'should be able to provide a symbol for an entry' do
@@ -66,7 +70,6 @@ module Mws
       OrderStatus.for('Unshipped').should == OrderStatus.UNSHIPPED
       OrderStatus.for('PartiallyShipped').should == OrderStatus.UNSHIPPED
     end
-
     
   end
 
