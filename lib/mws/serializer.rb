@@ -43,7 +43,7 @@ module Mws
         name = Mws::Utils.underscore(element.name).to_sym
         path = path_for name, context
         exception = @exceptions[path]
-        delegate = exception and exception.include?(:from) ? exception[:from] : method(:hash_for)
+        delegate = (exception and exception.include?(:from)) ? exception[:from] : method(:hash_for)
         content = instance_exec element, path, &delegate
         if res.include? name
           res[name] = [ res[name] ] unless res[name].instance_of? Array

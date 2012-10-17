@@ -4,40 +4,30 @@ class Mws::Apis::Feeds::Products
     @feeds_api = feeds_api
     @merchant = merchant
 
-    @product_serializer = Mws::Serializer.new({
-      'product.sku' => [
-        lambda { | key, value, doc, path |
-          doc.send(key.upcase, value)
-        },
-        lambda { | node, path | node.text }
-      ],
-      'product.description_data.msrp' => [
-        lambda { | key, value, doc, path |
-          doc.send(key.upcase, value[:amount], currency: value[:currency])
-        },
-        lambda { | node, path |
-          { amount: node.text, currency: node['currency'] }
-        },
-      ],
-      'product.product_data.ce' => [
-        lambda { | key, value, doc, path |
-          doc.send(key.upcase) do | builder |
-            proceed(value, builder, path)
-          end
-        },
-        lambda { | node, path |
-           puts self
+    @product_serializer = Mws::Serializer.new do
+      product {
+        sku {
+          to { | key, value, doc, path | doc.send(key.upcase, value) }
         }
-      ],
-      'product.product_data.ce.product_type.cable_or_adapter.cable_length' => [
-        lambda { | key, value, doc, path |
-          doc.send(Mws::Utils.camelize(key), value[:length], unitOfMeasure: value[:unit_of_measure])
-        },
-        lambda { | node, path |
-          { length: node.text, unitOfMeasure: node['unitOfMeasure'] }
+        description_data.msrp {
+          to { | key, value, doc, path | doc.send(key.upcase, value[:amount], currency: value[:currency]) }
         }
-      ]
-    })
+        product_data {
+          ce {
+            to { | key, value, doc, path |
+              doc.send(key.upcase) do | builder |
+                proceed(value, builder, path)
+              end
+            }
+            product_type.cable_or_adapter.cable_length {
+              to { | key, value, doc, path |
+                doc.send(Mws::Utils.camelize(key), value[:length], unitOfMeasure: value[:unit_of_measure])
+              }
+            }
+          }
+        }
+      }
+    end
   end
 
   def add(products)
@@ -50,7 +40,7 @@ class Mws::Apis::Feeds::Products
         end
       end
     end
-    @feeds_api.submit(feed.xml_for, feed_type: :product, purge_and_replace: 'false').id
+    @feeds_api.submit(feed.xml_for, feed_type: :product, purge_and_replace: false).id
   end
 
 end

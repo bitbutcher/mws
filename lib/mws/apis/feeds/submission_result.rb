@@ -1,5 +1,7 @@
 class Mws::Apis::Feeds::SubmissionResult
 
+  StatusCode = Mws::Enum.for complete: 'Complete', processing: 'Processing', rejected: 'Rejected'
+
   attr_accessor :message_id, :transaction_id, :status_code, :processed_message_count, :successfull_message_count, :error_message_count, :warning_message_count
   attr_accessor :message_results
 
@@ -13,7 +15,7 @@ class Mws::Apis::Feeds::SubmissionResult
     new do | result |
       result.message_id = node.xpath('MessageID').first.text.to_s
       result.transaction_id = node.xpath('ProcessingReport/DocumentTransactionID').first.text.to_s
-      result.status_code = node.xpath('ProcessingReport/StatusCode').first.text.to_sym
+      result.status_code = StatusCode.for(node.xpath('ProcessingReport/StatusCode').first.text).sym
       result.processed_message_count = node.xpath('ProcessingReport/ProcessingSummary/MessagesProcessed').first.text.to_i
       result.successfull_message_count = node.xpath('ProcessingReport/ProcessingSummary/MessagesSuccessful').first.text.to_i
       result.error_message_count = node.xpath('ProcessingReport/ProcessingSummary/MessagesWithError').first.text.to_i
@@ -44,7 +46,7 @@ class Mws::Apis::Feeds::SubmissionResult
         message.result_message_code = node.xpath('ResultMessageCode').first.text.to_i
         message.result_description = node.xpath('ResultDescription').first.text.to_s
         node.xpath('AdditionalInfo').each do | info |
-          message.additional_info = Mws::Serializer.new.hash_for(info, 'additional_info')
+          message.additional_info = Mws::Serializer.new.hash_for(info, 'additional_info') 
         end
       end
     end

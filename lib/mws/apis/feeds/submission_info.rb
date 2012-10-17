@@ -11,7 +11,7 @@ class Mws::Apis::Feeds::SubmissionInfo
   def self.from_xml(node)
     new do | info |
       info.id = node.xpath('FeedSubmissionId').first.text.to_s
-      info.feed_type = node.xpath('FeedType').first.text.to_sym
+      info.feed_type = Mws::Apis::Feeds::Feed::Type.for(node.xpath('FeedType').first.text).sym
       info.status = Status.for(node.xpath('FeedProcessingStatus').first.text).sym
       info.submitted_timestamp = Time.parse(node.xpath('SubmittedDate').first.text.to_s)
       node.xpath('StartedProcessingDate').each do | node |
