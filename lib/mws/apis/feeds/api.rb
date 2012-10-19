@@ -1,6 +1,6 @@
 class Mws::Apis::Feeds::Api
 
-  attr_accessor :products
+  attr_accessor :images, :prices, :products
 
   def initialize(connection, defaults={})
     @connection = connection
@@ -8,6 +8,8 @@ class Mws::Apis::Feeds::Api
     @defaults = defaults
     
     @products = Mws::Apis::Feeds::Products.new self, defaults[:merchant]
+    @prices = Mws::Apis::Feeds::Prices.new self, defaults[:merchant]
+    @images = Mws::Apis::Feeds::Images.new self, defaults[:merchant]
   end
 
   def get(id)

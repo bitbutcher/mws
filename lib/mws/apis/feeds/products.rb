@@ -6,22 +6,29 @@ class Mws::Apis::Feeds::Products
 
     @product_serializer = Mws::Serializer.new do
       product {
+        standard_product_id {
+          to { | key, value, doc, path | 
+            doc.StandardProductID do | builder |
+              proceed(value, builder, path)
+            end
+          }
+        }
         sku {
-          to { | key, value, doc, path | doc.send(key.upcase, value) }
+          to { | key, value, doc, path | doc.SKU(value) }
         }
         description_data.msrp {
-          to { | key, value, doc, path | doc.send(key.upcase, value[:amount], currency: value[:currency]) }
+          to { | key, value, doc, path | doc.MSRP(value[:amount], currency: value[:currency]) }
         }
         product_data {
           ce {
             to { | key, value, doc, path |
-              doc.send(key.upcase) do | builder |
+              doc.CE do | builder |
                 proceed(value, builder, path)
               end
             }
             product_type.cable_or_adapter.cable_length {
               to { | key, value, doc, path |
-                doc.send(Mws::Utils.camelize(key), value[:length], unitOfMeasure: value[:unit_of_measure])
+                doc.CableLength(value[:length], unitOfMeasure: value[:unit_of_measure])
               }
             }
           }

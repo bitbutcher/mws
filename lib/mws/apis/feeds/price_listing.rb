@@ -29,11 +29,11 @@ module Mws::Apis::Feeds
         @sale.to_xml('Sale', xml) if @sale
       }
       if parent
-        parent.send('Price', &block)
+        parent.send(name, &block)
         parent.to_xml
       else
         Nokogiri::XML::Builder.new do | xml |
-          xml.send('Price', &block)
+          xml.send(name, &block)
         end.to_xml
       end
     end
