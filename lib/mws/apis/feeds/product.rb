@@ -20,10 +20,26 @@ class Mws::Apis::Feeds::Product
     miligrams: 'MG'
   )
 
+  CategorySerializer = Mws::Serializer.new do
+    ce {
+      to { | key, value, doc, path |
+        doc.send(key.upcase) do | builder |
+          proceed(value, builder, path)
+        end
+      }
+      product_type.cable_or_adapter.cable_length {
+        to { | key, value, doc, path |
+          doc.send(Mws::Utils.camelize(key), value[:length], unitOfMeasure: value[:unit_of_measure])
+        }
+      }
+    }
+  end
+
   attr_reader :sku, :description
 
   attr_accessor :upc, :tax_code, :msrp, :brand, :name, :description, :bullet_points
   attr_accessor :item_dimensions, :package_dimensions, :package_weight, :shipping_weight
+  attr_accessor :category, :details
 
   def initialize(sku, &block)
     @sku = sku
@@ -37,12 +53,12 @@ class Mws::Apis::Feeds::Product
       xml.StandardProductID {
         xml.Type 'UPC'
         xml.Value @upc
-      } 
-      xml.ProductTaxCode @tax_code
+      } unless @upc.nil?
+      xml.ProductTaxCode @tax_code unless @upc.nil?
       xml.DescriptionData {
-        xml.Title @name
-        xml.Brand @brand   
-        xml.Description @description
+        xml.Title @name unless @name.nil?
+        xml.Brand @brand  unless @brand.nil?  
+        xml.Description @description  unless @description.nil?
         bullet_points.each do | bullet_point |
           xml.BulletPoint bullet_point
         end
@@ -54,6 +70,14 @@ class Mws::Apis::Feeds::Product
 
         xml.MSRP(@msrp.amount, currency: @msrp.currency) unless @msrp.nil?
       }
+
+      unless @details.nil?
+        @category ||= :ce
+        xml.ProductData {
+          CategorySerializer.xml_for @category, {product_type: @details}, xml
+        }
+      end
+
     }
     if parent
       parent.send(name, &block)
@@ -108,6 +132,11 @@ class Mws::Apis::Feeds::Product
     def bullet_point(bullet_point)
       @product.bullet_points << bullet_point
     end  
+
+    def details(&block)
+      @product.details = {}
+      DetailBuilder.new(@product.details).instance_eval &block if block_given?
+    end
 
   end
 
@@ -191,6 +220,23 @@ class Mws::Apis::Feeds::Product
     def weight(value, unit)
       @dimensions.weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
     end    
+  end
+
+  class DetailBuilder
+
+    def initialize(details)
+      @details = details
+    end
+
+    def method_missing(method, *args, &block)
+      if block_given?
+        @details[method] = {}
+        DetailBuilder.new(@details[method]).instance_eval(&block)  
+      elsif args.length > 0
+        @details[method] = args[0]
+      end
+    end
+
   end
 
 end

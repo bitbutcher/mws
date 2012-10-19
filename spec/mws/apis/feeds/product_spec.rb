@@ -126,11 +126,29 @@ module Mws::Apis::Feeds
         product.shipping_weight.unit.should == :ounces
       end
 
+      it 'should support building with product details' do
+        product = Product.new '12343' do
+          details {
+            value 'some value'
+            nested {
+              foo 'bar'
+              nested {
+                baz 'bahhh'
+              }
+            }
+          }
+        end
+
+        product.details.should_not be nil
+        product.details[:value].should == 'some value'
+        product.details[:nested][:foo].should == 'bar'
+        product.details[:nested][:nested][:baz].should == 'bahhh'
+      end
     end
 
     context '#to_xml' do
 
-      it 'should create correct standard product id' do
+      it 'should create xml for standard attributes' do
 
         expected = Nokogiri::XML::Builder.new do
           Product {
@@ -196,7 +214,38 @@ module Mws::Apis::Feeds
         
       end
 
+      it 'should create xml for product details' do
+        expected = Nokogiri::XML::Builder.new do
+          Product {
+            SKU '12343'
+            DescriptionData {}
+            ProductData {
+              CE {
+                ProductType {
+                  CableOrAdapter {
+                    CableLength 6, unitOfMeasure: 'feet'
+                  }
+                }
+              }
+            }
+          }
+        end.to_xml
+
+        expected.should == Product.new('12343') do 
+          category :ce
+          details {
+            cable_or_adapter {
+              cable_length {
+                length 6
+                unit_of_measure :feet
+              }
+            }    
+          }
+        end.to_xml
+      end
+
     end
+
   end
 
 end
