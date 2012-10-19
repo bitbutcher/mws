@@ -7,8 +7,8 @@ class Mws::Apis::Feeds::Feed
     product_relationship: '_POST_PRODUCT_RELATIONSHIP_DATA_', 
     item: '_POST_ITEM_DATA_', 
     product_overrides: '_POST_PRODUCT_OVERRIDES_DATA_', 
-    product_image: '_POST_PRODUCT_IMAGE_DATA_', 
-    product_pricing: '_POST_PRODUCT_PRICING_DATA_', 
+    image: '_POST_PRODUCT_IMAGE_DATA_', 
+    price: '_POST_PRODUCT_PRICING_DATA_', 
     inventory_availability: '_POST_INVENTORY_AVAILABILITY_DATA_', 
     order_acknowledgement: '_POST_ORDER_ACKNOWLEDGEMENT_DATA_', 
     order_fufillment: '_POST_ORDER_FULFILLMENT_DATA_', 
@@ -29,7 +29,7 @@ class Mws::Apis::Feeds::Feed
     price: 'Price',
     processing_report: 'ProcessingReport',
     product: 'Product',
-    product_image: 'ProductImage',
+    image: 'ProductImage',
     relationship: 'Relationship',
     settlement_report: 'SettlementReport'
   )

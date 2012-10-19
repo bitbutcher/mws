@@ -4,10 +4,8 @@ module Mws::Apis::Feeds
 
   autoload :Api, 'mws/apis/feeds/api'
   autoload :ImageListing, 'mws/apis/feeds/image_listing'
-  autoload :Images, 'mws/apis/feeds/images'
   autoload :Price, 'mws/apis/feeds/price'
   autoload :PriceListing, 'mws/apis/feeds/price_listing'
-  autoload :Prices, 'mws/apis/feeds/prices'
   autoload :Product, 'mws/apis/feeds/product'
   autoload :Products, 'mws/apis/feeds/products'
   autoload :Feed, 'mws/apis/feeds/feed'
