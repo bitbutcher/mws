@@ -9,7 +9,7 @@ module Mws::Apis::Feeds
       defaults[:version] ||= '2009-01-01'
       @defaults = defaults
       
-      @products = Products.new self, defaults[:merchant]
+      @products = TargetedApi.new self, defaults[:merchant], :product
       @prices = TargetedApi.new self, defaults[:merchant], :price
       @images = TargetedApi.new self, defaults[:merchant], :image
     end
