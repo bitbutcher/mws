@@ -9,7 +9,7 @@ class Mws::Apis::Feeds::Feed
     product_overrides: '_POST_PRODUCT_OVERRIDES_DATA_', 
     image: '_POST_PRODUCT_IMAGE_DATA_', 
     price: '_POST_PRODUCT_PRICING_DATA_', 
-    inventory_availability: '_POST_INVENTORY_AVAILABILITY_DATA_', 
+    inventory: '_POST_INVENTORY_AVAILABILITY_DATA_', 
     order_acknowledgement: '_POST_ORDER_ACKNOWLEDGEMENT_DATA_', 
     order_fufillment: '_POST_ORDER_FULFILLMENT_DATA_', 
     fulfillment_order_request: '_POST_FULFILLMENT_ORDER_REQUEST_DATA_', 
