@@ -7,6 +7,7 @@ module Mws
   autoload :Connection, 'mws/connection'
   autoload :Enum, 'mws/enum'
   autoload :EnumEntry, 'mws/enum'
+  autoload :Errors, 'mws/errors'
   autoload :Query, 'mws/query'
   autoload :Serializer, 'mws/serializer'
   autoload :Signer, 'mws/signer'

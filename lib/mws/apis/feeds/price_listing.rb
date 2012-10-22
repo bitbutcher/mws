@@ -23,7 +23,7 @@ module Mws::Apis::Feeds
 
     def to_xml(name='Price', parent=nil)
       block = lambda { |xml| 
-        xml.send 'SKU', @sku
+        xml.SKU @sku
         @base.to_xml 'StandardPrice', xml
         @min.to_xml('MAP', xml) if @min
         @sale.to_xml('Sale', xml) if @sale

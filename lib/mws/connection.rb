@@ -52,7 +52,7 @@ class Mws::Connection
     res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
       http.request req
     end
-    raise "Code: #{res.code}, Message: #{res.msg}" if res.body.nil?
+    raise Mws::Errors::ServerError.new(code: res.code, message: res.msg) if res.body.nil?
     res.body
   end
 
@@ -62,9 +62,9 @@ class Mws::Connection
     # puts doc.to_xml
     # puts "------------------------======----------------------------"
     doc.xpath('/ErrorResponse/Error').each do | error |
-      message = []
-      error.element_children.each { |node| message << "#{node.name}: #{node.text}" }
-      raise message.join ", "
+      options = {}
+      error.element_children.each { |node| options[node.name.downcase.to_sym] = node.text }
+      raise Mws::Errors::ServerError.new(options)
     end
     result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
     # puts result
