@@ -1,11 +1,17 @@
+#!/usr/bin/env ruby
+
+if ARGV.size < 3
+  puts "Usage: 'catalog-workflow merchant access secret'"
+  exit 1
+end
 
 require 'mws'
 require 'active_support/core_ext'
 
 mws = Mws.connect(
-  merchant: 'XXX', 
-  access: 'XXX', 
-  secret: 'XXX'
+  merchant: ARGV[0], 
+  access: ARGV[1], 
+  secret: ARGV[2]
 )
 
 class Workflow
