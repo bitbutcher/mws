@@ -10,6 +10,7 @@ module Mws::Apis::Feeds
   autoload :Product, 'mws/apis/feeds/product'
   autoload :Feed, 'mws/apis/feeds/feed'
   autoload :SalePrice, 'mws/apis/feeds/sale_price'
+  autoload :Shipping, 'mws/apis/feeds/shipping'
   autoload :SubmissionInfo, 'mws/apis/feeds/submission_info'
   autoload :SubmissionResult, 'mws/apis/feeds/submission_result'
 

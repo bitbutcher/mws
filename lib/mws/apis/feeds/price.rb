@@ -6,9 +6,9 @@ module Mws::Apis::Feeds
 
     attr_reader :amount, :currency
 
-    def initialize(amount, currency)
+    def initialize(amount, currency=nil)
       @amount = amount
-      @currency = currency
+      @currency = currency || 'USD'
     end
 
     def ==(other)

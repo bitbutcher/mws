@@ -6,7 +6,7 @@ class Mws::Apis::Feeds::Feed
     product: '_POST_PRODUCT_DATA_', 
     product_relationship: '_POST_PRODUCT_RELATIONSHIP_DATA_', 
     item: '_POST_ITEM_DATA_', 
-    product_overrides: '_POST_PRODUCT_OVERRIDES_DATA_', 
+    override: '_POST_PRODUCT_OVERRIDES_DATA_', 
     image: '_POST_PRODUCT_IMAGE_DATA_', 
     price: '_POST_PRODUCT_PRICING_DATA_', 
     inventory: '_POST_INVENTORY_AVAILABILITY_DATA_', 

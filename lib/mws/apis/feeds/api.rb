@@ -10,8 +10,9 @@ module Mws::Apis::Feeds
       @defaults = defaults
       
       @products = TargetedApi.new self, defaults[:merchant], :product
-      @prices = TargetedApi.new self, defaults[:merchant], :price
       @images = TargetedApi.new self, defaults[:merchant], :image
+      @prices = TargetedApi.new self, defaults[:merchant], :price
+      @shipping = TargetedApi.new self, defaults[:merchant], :override
       @inventory = TargetedApi.new self, defaults[:merchant], :inventory
     end
 
