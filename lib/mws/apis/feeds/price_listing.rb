@@ -22,19 +22,11 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='Price', parent=nil)
-      block = lambda { |xml| 
+      Mws::Serializer.tree name, parent do |xml| 
         xml.SKU @sku
         @base.to_xml 'StandardPrice', xml
         @min.to_xml('MAP', xml) if @min
         @sale.to_xml('Sale', xml) if @sale
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 

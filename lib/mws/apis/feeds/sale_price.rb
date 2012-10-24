@@ -19,18 +19,10 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='Sale', parent=nil)
-      block = lambda { |xml|
+      Mws::Serializer.tree name, parent do |xml|
         xml.send 'StartDate', @from.iso8601
         xml.send 'EndDate', @to.iso8601
         price.to_xml 'SalePrice', xml
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 

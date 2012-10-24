@@ -82,7 +82,14 @@ workflow.register do
       Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897_sa.jpg', 'Main'),
       Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897cv1a.jpg', 'PT1')
     )
-    workflow.register price_feed.id, image_feed.id do
+    shipping_feed = mws.feeds.shipping.add(
+      Mws::Apis::Feeds::Shipping.new('2634897') {
+        restricted 'Alaska'
+        adjust 'Ground', -4.99, 'USD'
+        replace '2nd Day Air', 12.99, 'USD'
+      }
+    )
+    workflow.register price_feed.id, image_feed.id, shipping_feed.id do
       inventory_feed = mws.feeds.inventory.add(
         Mws::Apis::Feeds::Inventory.new('2634897', quantity: 10, fulfillment_type: :mfn)
       )
@@ -91,7 +98,7 @@ workflow.register do
       end
       inventory_feed.id
     end
-    [ price_feed.id, image_feed.id ]
+    [ price_feed.id, image_feed.id, shipping_feed.id ]
   end
   product_feed.id
 end

@@ -19,17 +19,9 @@ class Mws::Apis::Feeds::Shipping
   end
 
   def to_xml(name='Override', parent=nil)
-    block = lambda { |xml|
+    Mws::Serializer.tree name, parent do |xml|
       xml.SKU @sku
       @options.each { |option| option.to_xml 'ShippingOverride', xml }
-    }
-    if parent
-      parent.send(name, &block)
-      parent.to_xml
-    else
-      Nokogiri::XML::Builder.new do | xml |
-        xml.send(name, &block)
-      end.to_xml
     end
   end
 
@@ -53,17 +45,9 @@ class Mws::Apis::Feeds::Shipping
     end
 
     def to_xml(name='ShippingOverride', parent=nil)
-      block = lambda { |xml|
+      Mws::Serializer.tree name, parent do |xml|
         xml.ShipOption @label
         xml.IsShippingRestricted @restricted
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 
@@ -82,18 +66,10 @@ class Mws::Apis::Feeds::Shipping
     end
 
     def to_xml(name='ShippingOverride', parent=nil)
-      block = lambda { |xml|
+      Mws::Serializer.tree name, parent do |xml|
         xml.ShipOption @label
         xml.Type @type.val
         @amount.to_xml 'ShipAmount', xml
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 

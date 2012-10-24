@@ -2,7 +2,7 @@ module Mws::Apis::Feeds
 
   class Api
 
-    attr_accessor :products, :images, :prices, :inventory
+    attr_accessor :products, :images, :prices, :inventory, :shipping
 
     def initialize(connection, defaults={})
       @connection = connection

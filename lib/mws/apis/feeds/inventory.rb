@@ -24,7 +24,7 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='Inventory', parent=nil)
-      block = lambda { |xml| 
+      Mws::Serializer.tree name, parent do |xml| 
         xml.SKU @sku
         xml.FulfillmentCenterID @fulfillment.center unless @fulfillment.center.nil?
         xml.Available @available unless @available.nil?
@@ -33,14 +33,6 @@ module Mws::Apis::Feeds
         xml.RestockDate @restock.iso8601 unless @restock.nil?
         xml.FulfillmentLatency @fulfillment.latency unless @fulfillment.latency.nil?
         xml.SwitchFulfillmentTo FulfillmentType.for(@fulfillment.type).val unless @fulfillment.type.nil?
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 

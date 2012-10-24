@@ -18,15 +18,7 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='Price', parent=nil)
-      amount = '%.2f' % @amount
-      if parent
-        parent.send(name, amount, currency: @currency)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, amount, currency: @currency)
-        end.to_xml
-      end
+      Mws::Serializer.leaf name, parent, '%.2f' % @amount, currency: @currency
     end
 
   end
