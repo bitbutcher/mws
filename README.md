@@ -1,6 +1,6 @@
 # Mws
 
-TODO: Write a gem description
+The goal of this gem is to facilities interactions with the Amazon Marketplace Web Services from Ruby clients.  
 
 ## Installation
 
