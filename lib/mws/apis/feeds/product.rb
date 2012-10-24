@@ -133,8 +133,9 @@ class Mws::Apis::Feeds::Product
       @product.bullet_points << bullet_point
     end  
 
-    def details(&block)
-      @product.details = {}
+    def details(details=nil, &block)
+      puts "Details: #{details} - Block: #{block}"
+      @product.details = details || {}
       DetailBuilder.new(@product.details).instance_eval &block if block_given?
     end
 
