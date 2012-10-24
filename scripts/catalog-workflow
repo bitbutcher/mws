@@ -74,7 +74,7 @@ workflow.register do
       }
     end
   )
-  workflow.register product_feed do
+  workflow.register product_feed.id do
     price_feed = mws.feeds.prices.add(
       Mws::Apis::Feeds::PriceListing.new('2634897', 49.99).on_sale(29.99, Time.now, 3.months.from_now)
     )
@@ -82,18 +82,18 @@ workflow.register do
       Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897_sa.jpg', 'Main'),
       Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897cv1a.jpg', 'PT1')
     )
-    workflow.register price_feed, image_feed do
+    workflow.register price_feed.id, image_feed.id do
       inventory_feed = mws.feeds.inventory.add(
         Mws::Apis::Feeds::Inventory.new('2634897', quantity: 10, fulfillment_type: :mfn)
       )
-      workflow.register inventory_feed do
+      workflow.register inventory_feed.id do
         puts 'The workflow is complete!'
       end
-      inventory_feed
+      inventory_feed.id
     end
-    [ price_feed, image_feed ]
+    [ price_feed.id, image_feed.id ]
   end
-  product_feed
+  product_feed.id
 end
 
 workflow.proceed

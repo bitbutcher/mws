@@ -76,15 +76,20 @@ module Mws::Apis::Feeds
 
     def submit(operation_type, purge_and_replace, *resources)
       root = @message_type.val
+      messages = []
       feed = Feed.new merchant: @merchant, message_type: @message_type do
         resources.each do | resource |
-          message operation_type do | builder |
+          messages << message(resource.sku, operation_type) do | builder |
             resource.to_xml root, builder
           end
         end
       end
-      puts feed.xml_for
-      @feeds.submit(feed.xml_for, feed_type: @feed_type, purge_and_replace: purge_and_replace).id
+      Transaction.new @feeds.submit(feed.xml_for, feed_type: @feed_type, purge_and_replace: purge_and_replace) do 
+        messages.each_with_index do | message, index |
+          resource = resources[index]
+          item message.id, message.sku, message.operation_type, resource.respond_to?(:type) ? resource.type : nil
+        end
+      end
     end
 
   end

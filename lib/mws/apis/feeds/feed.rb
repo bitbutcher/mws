@@ -63,23 +63,26 @@ class Mws::Apis::Feeds::Feed
     builder.to_xml
   end 
 
-  def message(operation_type, &body_builder)
-    @messages << Message.new(@messages.length + 1, operation_type, body_builder)
+  def message(sku, operation_type, &body_builder)
+    message = Message.new @messages.length + 1, sku, operation_type, body_builder
+    @messages << message
+    message
   end
 
   class Message
-    attr_accessor :id, :operation_type, :body_builder
+    attr_accessor :id, :sku, :operation_type, :body_builder
 
-    def initialize(id, operation_type, body_builder)
+    def initialize(id, sku, operation_type, body_builder)
       @id = id
-      @operation_type = OperationType.for(operation_type).val
+      @sku = sku
+      @operation_type = operation_type
       @body_builder = body_builder
     end
 
     def xml_for(builder)
       builder.Message {
         builder.MessageID @id
-        builder.OperationType @operation_type
+        builder.OperationType OperationType.for(@operation_type).val
         @body_builder.call builder
       }
     end

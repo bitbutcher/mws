@@ -134,7 +134,6 @@ class Mws::Apis::Feeds::Product
     end  
 
     def details(details=nil, &block)
-      puts "Details: #{details} - Block: #{block}"
       @product.details = details || {}
       DetailBuilder.new(@product.details).instance_eval &block if block_given?
     end
