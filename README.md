@@ -42,7 +42,7 @@ Access the Feeds Api wrappers:
 Example: Add product details:
 
     sku = '12345678'
-    product = Mws::Apis::Feeds::Product.new(sku) do
+    product = Mws::Apis::Feeds::Product.new sku {
       upc '123435566654'
       tax_code 'GEN_TAX_CODE'
       name 'Some Product'
@@ -58,7 +58,7 @@ Example: Add product details:
           }
         }
       }
-    end
+    }
 
     submission_id = mws.feeds.products.add(product)
 
@@ -73,7 +73,17 @@ Example: Setting product pricing:
 
     price_submission_id = mws.feeds.prices.add(
       Mws::Apis::Feeds::PriceListing.new(sku, 14.99).on_sale(12.99, Time.now, 3.months.from_now)
-    ) 
+    )
+
+Example: Overriding product shipping:
+
+    sku = '12345678'
+    shipping_submission_id = mws.feeds.shipping.add(
+      Mws::Apis::Feeds::Shipping.new sku {
+        replace 'UPS Ground', 4.99
+        adjust '2nd-Day Air', 7.00
+      }
+    )
 
 Example: Setting product inventory:
 
