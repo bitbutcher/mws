@@ -1,5 +1,5 @@
 module Mws::Apis::Feeds
-  
+
   class Product
 
     LengthUnit = Mws::Enum.for(
@@ -50,7 +50,7 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='Product', parent=nil)
-      Mws::Serializer.tree name, parent do |xml| 
+      Mws::Serializer.tree name, parent do |xml|
         xml.SKU @sku
         xml.StandardProductID {
           xml.Type 'UPC'
@@ -59,7 +59,7 @@ module Mws::Apis::Feeds
         xml.ProductTaxCode @tax_code unless @upc.nil?
         xml.DescriptionData {
           xml.Title @name unless @name.nil?
-          xml.Brand @brand  unless @brand.nil?  
+          xml.Brand @brand  unless @brand.nil?
           xml.Description @description  unless @description.nil?
           bullet_points.each do | bullet_point |
             xml.BulletPoint bullet_point
@@ -101,7 +101,7 @@ module Mws::Apis::Feeds
       end
 
       def msrp(amount, currency)
-        @product.msrp = Mws::Apis::Feeds::Price.new amount, currency
+        @product.msrp = Mws::Apis::Feeds::MonetaryAmount.new amount, currency
       end
 
       def item_dimensions(&block)
@@ -112,7 +112,7 @@ module Mws::Apis::Feeds
       def package_dimensions(&block)
         @product.package_dimensions = Dimensions.new
         DimensionsBuilder.new(@product.package_dimensions).instance_eval &block if block_given?
-      end  
+      end
 
       def package_weight(value, unit)
         @product.package_weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
@@ -124,7 +124,7 @@ module Mws::Apis::Feeds
 
       def bullet_point(bullet_point)
         @product.bullet_points << bullet_point
-      end  
+      end
 
       def details(details=nil, &block)
         @product.details = details || {}
@@ -134,11 +134,11 @@ module Mws::Apis::Feeds
     end
 
     class Dimensions
-      
+
       attr_accessor :length, :width, :height, :weight
 
       def to_xml(name='Dimensions', parent=nil)
-        Mws::Serializer.tree name, parent do |xml| 
+        Mws::Serializer.tree name, parent do |xml|
           @length.to_xml 'Length', xml unless @length.nil?
           @width.to_xml 'Width', xml unless @width.nil?
           @height.to_xml 'Height', xml unless @height.nil?
@@ -157,7 +157,7 @@ module Mws::Apis::Feeds
         @value = value
       end
 
-      def unit 
+      def unit
         @unit.sym
       end
 
@@ -169,7 +169,7 @@ module Mws::Apis::Feeds
         raise ArgumentError, "Not a valid unit of length - #{unit}" if LengthUnit.for(unit).nil?
         LengthUnit.for(unit)
       end
-      
+
       def self.require_valid_weight_unit(unit)
         raise ArgumentError, "Not a valid unit of weight - #{unit}" if WeightUnit.for(unit).nil?
         WeightUnit.for(unit)
@@ -177,7 +177,7 @@ module Mws::Apis::Feeds
 
     end
 
-    class DimensionsBuilder 
+    class DimensionsBuilder
 
       def initialize(dimensions)
         @dimensions = dimensions
@@ -197,7 +197,7 @@ module Mws::Apis::Feeds
 
       def weight(value, unit)
         @dimensions.weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
-      end    
+      end
     end
 
     class DetailBuilder
@@ -209,7 +209,7 @@ module Mws::Apis::Feeds
       def method_missing(method, *args, &block)
         if block_given?
           @details[method] = {}
-          DetailBuilder.new(@details[method]).instance_eval(&block)  
+          DetailBuilder.new(@details[method]).instance_eval(&block)
         elsif args.length > 0
           @details[method] = args[0]
         end

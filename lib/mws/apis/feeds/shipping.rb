@@ -96,7 +96,7 @@ class Mws::Apis::Feeds::Shipping
     end
 
     def override(label, type, amount, currency=nil)
-      @target << Override.new(label, type, Mws::Apis::Feeds::Price.new(amount, currency))
+      @target << Override.new(label, type, Mws::Apis::Feeds::MonetaryAmount.new(amount, currency))
     end
 
     def adjust(label, amount, currency=nil)

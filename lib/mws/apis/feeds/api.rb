@@ -61,8 +61,7 @@ module Mws::Apis::Feeds
       submit :update, true, *resources
     end
 
-    def update(*resources)
-      submit :update, false, *resources
+    def update(*resources)      submit :update, false, *resources
     end
 
     def patch(*resources)

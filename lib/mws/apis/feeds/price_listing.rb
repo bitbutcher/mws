@@ -8,15 +8,15 @@ module Mws::Apis::Feeds
 
     def initialize(sku, base, options={})
       @sku = sku
-      @currency = options[:currency] || 'USD'
-      @base = Price.new(base, @currency)
-      @min = Price.new(options[:min], @currency) if options.include? :min
+      @base = MonetaryAmount.new(base, options[:currency])
+      @currency =  @base.currency
+      @min = MonetaryAmount.new(options[:min], @currency) if options.include? :min
       on_sale(options[:sale][:amount], options[:sale][:from], options[:sale][:to]) if options.include? :sale
       validate
     end
 
     def on_sale(amount, from, to)
-      @sale = SalePrice.new Price.new(amount, @currency), from, to
+      @sale = SalePrice.new MonetaryAmount.new(amount, @currency), from, to
       validate
       self
     end

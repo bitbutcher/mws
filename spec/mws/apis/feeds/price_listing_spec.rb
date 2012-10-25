@@ -9,8 +9,8 @@ module Mws::Apis::Feeds
       it 'should be able to construct a price with only sku and base price' do
         price = PriceListing.new('987612345', 14.99)
         price.sku.should == '987612345'
-        price.currency.should == 'USD'
-        price.base.should == Price.new(14.99, 'USD')
+        price.currency.should == :usd
+        price.base.should == MonetaryAmount.new(14.99, :usd)
         price.min.should be nil
         price.sale.should be nil
       end
@@ -18,12 +18,12 @@ module Mws::Apis::Feeds
       it 'should be able to construct a price with custom currency code' do
         price = PriceListing.new('9876123456', 14.99, currency: 'EUR')
         price.currency.should == 'EUR'
-        price.base.should == Price.new(14.99, 'EUR')
+        price.base.should == MonetaryAmount.new(14.99, 'EUR')
       end
 
       it 'should be able to construct a price with custom minimum advertised price' do
         price = PriceListing.new('987612345', 14.99, min: 11.99)
-        price.min.should == Price.new(11.99, 'USD')
+        price.min.should == MonetaryAmount.new(11.99, :usd)
       end
 
       it 'should be able to construct a new price with custom sale price' do
@@ -34,7 +34,7 @@ module Mws::Apis::Feeds
           from: from,
           to: to
         })
-        price.sale.should == SalePrice.new(Price.new(12.99, 'USD'), from, to)
+        price.sale.should == SalePrice.new(MonetaryAmount.new(12.99, :usd), from, to)
       end
 
       it 'should validate that the base price is less than the minimum advertised price' do
@@ -57,7 +57,7 @@ module Mws::Apis::Feeds
         from = 1.day.ago
         to = 4.months.from_now
         price = PriceListing.new('987612345', 14.99).on_sale(12.99, from, to)
-        price.sale.should == SalePrice.new(Price.new(12.99, 'USD')  , from, to)
+        price.sale.should == SalePrice.new(MonetaryAmount.new(12.99, :usd)  , from, to)
       end
 
     end
@@ -67,7 +67,7 @@ module Mws::Apis::Feeds
       it 'should properly serialize to XML' do
         from = 1.day.ago
         to = 4.months.from_now
-        price = PriceListing.new('987612345', 14.99, currency: 'EUR', min: 10.99).on_sale(12.99, from, to)
+        price = PriceListing.new('987612345', 14.99, currency: :eur, min: 10.99).on_sale(12.99, from, to)
         expected = Nokogiri::XML::Builder.new do
           Price {
             SKU '987612345'
