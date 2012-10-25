@@ -2,6 +2,29 @@ require 'nokogiri'
 
 class Mws::Apis::Feeds::Shipping
 
+  Region = Mws::Enum.for(
+    continental_us: 'Continental US',
+    us_protectorates: 'US Protectorates',
+    alaska_hawaii: 'Alaska Hawaii',
+    apo_fpo: 'APO/FPO',
+    canada: 'Canada',
+    europe: 'Europe',
+    asia: 'Asia',
+    other: 'Outside US, Eur., CA, Asia'
+  )
+
+  Variant = Mws::Enum.for(
+    street: 'Street', 
+    po_box: 'PO Box'
+  )
+
+  Speed = Mws::Enum.for(
+    standard: 'Std',
+    expedited: 'Exp',
+    two_day: 'Second',
+    one_day: 'Next'
+  )
+
   attr_reader :sku
 
   def initialize(sku, &block)
@@ -27,47 +50,63 @@ class Mws::Apis::Feeds::Shipping
 
   class Option
 
-    attr_reader :label
+    attr_reader :region, :speed, :variant
 
-    def initialize(label)
-      @label = label
+    def initialize(region, speed=Speed.STANDARD, variant=nil)
+      @region = Region.for(region)
+      @speed = Speed.for(speed)
+      @variant = nil
+      if supports_variant?
+        @variant = Variant.for(variant) || Variant.STREET
+      end
+    end
+
+    def supports_variant?
+      [ Region.CONTINENTAL_US, Region.US_PROTECTORATES, Region.ALASKA_HAWAII, Region.APO_FPO ].include? @region
+    end
+
+    def to_s
+      [ @speed, @region, @variant ].compact.map { |it| it.val }.join ' '
     end
 
   end
 
-  class Restriction < Option
+  class Restriction
 
     attr_reader :restricted
 
-    def initialize(label, restricted=true)
-      super(label)
+    def initialize(option, restricted=true)
+      @option = option
       @restricted = restricted
     end
 
     def to_xml(name='ShippingOverride', parent=nil)
       Mws::Serializer.tree name, parent do |xml|
-        xml.ShipOption @label
+        xml.ShipOption @option
         xml.IsShippingRestricted @restricted
       end
     end
 
   end
 
-  class Override < Option
+  class Override
 
-    Type = Mws::Enum.for adjust: 'Additive', replace: 'Exclusive'
+    Type = Mws::Enum.for(
+      adjust: 'Additive', 
+      replace: 'Exclusive'
+    )
 
     attr_reader :type, :amount
 
-    def initialize(label, type, amount)
-      super(label)
+    def initialize(option, type, amount)
+      @option = option
       @type = Type.for(type)
       @amount = amount
     end
 
     def to_xml(name='ShippingOverride', parent=nil)
       Mws::Serializer.tree name, parent do |xml|
-        xml.ShipOption @label
+        xml.ShipOption @option
         xml.Type @type.val
         @amount.to_xml 'ShipAmount', xml
       end
@@ -83,28 +122,29 @@ class Mws::Apis::Feeds::Shipping
       @target = target
     end
 
-    def restriction(label, restricted)
-      @target << Restriction.new(label, restricted)
+    def restriction(restricted, region, speed, variant)
+      @target << Restriction.new(Option.new(region, speed, variant), restricted)
     end
 
-    def restricted(label)
-      restriction label, true
+    def restricted(region, speed, variant=nil)
+      restriction true, region, speed, variant
     end
 
-    def unrestricted(label)
-      restriction label, false
+    def unrestricted(region, speed, variant=nil)
+      restriction false, region, speed, variant
     end
 
-    def override(label, type, amount, currency=nil)
-      @target << Override.new(label, type, Mws::Apis::Feeds::MonetaryAmount.new(amount, currency))
+    def override(type, amount, currency, region, speed, variant)
+      @target << Override.new(Option.new(region, speed, variant), type, 
+        Mws::Apis::Feeds::MonetaryAmount.new(amount, currency))
     end
 
-    def adjust(label, amount, currency=nil)
-      override label, :adjust, amount, currency
+    def adjust(amount, currency, region, speed, variant=nil)
+      override :adjust, amount, currency, region, speed, variant
     end
 
-    def replace(label, amount, currency=nil)
-      override label, :replace, amount, currency
+    def replace(amount, currency, region, speed, variant=nil)
+      override :replace, amount, currency, region, speed, variant
     end
 
   end
