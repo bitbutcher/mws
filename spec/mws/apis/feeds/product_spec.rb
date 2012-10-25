@@ -38,11 +38,11 @@ module Mws::Apis::Feeds
 
       it 'should support building with msrp' do
         product = Product.new('12324') do
-          msrp 10.99, 'USD'
+          msrp 10.99, :usd
         end
 
         product.msrp.amount.should == 10.99
-        product.msrp.currency.should == 'USD'
+        product.msrp.currency.should == :usd
       end
 
       it 'should support building with item dimensions' do

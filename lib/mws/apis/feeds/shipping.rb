@@ -3,18 +3,18 @@ require 'nokogiri'
 class Mws::Apis::Feeds::Shipping
 
   Region = Mws::Enum.for(
-    continental_us: 'Continental US',
-    us_protectorates: 'US Protectorates',
+    continental_us: 'Cont US',
+    us_protectorates: 'US Prot',
     alaska_hawaii: 'Alaska Hawaii',
     apo_fpo: 'APO/FPO',
     canada: 'Canada',
     europe: 'Europe',
     asia: 'Asia',
-    other: 'Outside US, Eur., CA, Asia'
+    other: 'Outside US, EU, CA, Asia'
   )
 
   Variant = Mws::Enum.for(
-    street: 'Street', 
+    street: 'Street Addr', 
     po_box: 'PO Box'
   )
 
@@ -73,7 +73,7 @@ class Mws::Apis::Feeds::Shipping
 
   class Restriction
 
-    attr_reader :restricted
+    attr_reader :option, :restricted
 
     def initialize(option, restricted=true)
       @option = option
@@ -96,7 +96,7 @@ class Mws::Apis::Feeds::Shipping
       replace: 'Exclusive'
     )
 
-    attr_reader :type, :amount
+    attr_reader :option, :type, :amount
 
     def initialize(option, type, amount)
       @option = option

@@ -70,7 +70,7 @@ module Mws::Apis::Feeds
           @package_weight.to_xml('PackageWeight', xml) unless @package_weight.nil?
           @shipping_weight.to_xml('ShippingWeight', xml) unless @shipping_weight.nil?
 
-          xml.MSRP(@msrp.amount, currency: @msrp.currency) unless @msrp.nil?
+          @msrp.to_xml 'MSRP', xml unless @msrp.nil?
         }
 
         unless @details.nil?

@@ -4,7 +4,14 @@ module Mws::Apis::Feeds
 
   class MonetaryAmount
 
-    Currency = Mws::Enum.for usd: 'USD', gbp: 'GBP', eur: 'EUR', jpy: 'JPY', cad: 'CAD', default: 'DEFAULT'
+    Currency = Mws::Enum.for(
+      usd: 'USD', 
+      gbp: 'GBP', 
+      eur: 'EUR', 
+      jpy: 'JPY', 
+      cad: 'CAD', 
+      default: 'DEFAULT'
+    )
 
     attr_reader :amount, :currency
 

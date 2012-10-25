@@ -62,7 +62,7 @@ workflow.register do
       bullet_point'Connects an HDMI source to an HDTV or projector with an HDMI input'
       bullet_point 'Up to 15 Gbps bandwidth'
       bullet_point'In-wall rated' 
-      msrp 49.99, 'USD'
+      msrp 49.99, :usd
       category :ce
       details {
         cable_or_adapter {
@@ -84,10 +84,10 @@ workflow.register do
     )
     shipping_feed = mws.feeds.shipping.add(
       Mws::Apis::Feeds::Shipping.new('2634897') {
-        restricted 'Alaska'
-        adjust 'Ground', -4.99, 'USD'
-        replace '2nd Day Air', 12.99, 'USD'
-      }
+        restricted :alaska_hawaii, :standard, :po_box
+        adjust 4.99, :usd, :continental_us, :standard
+        replace 11.99, :usd, :continental_us, :expedited, :street
+      } 
     )
     workflow.register price_feed.id, image_feed.id, shipping_feed.id do
       inventory_feed = mws.feeds.inventory.add(
