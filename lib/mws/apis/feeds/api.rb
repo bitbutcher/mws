@@ -58,26 +58,31 @@ module Mws::Apis::Feeds
     end
 
     def add(*resources)
-      submit :update, true, *resources
+      submit resources, :update, true 
     end
 
-    def update(*resources)      submit :update, false, *resources
+    def update(*resources)
+      submit resources, :update
     end
 
     def patch(*resources)
       raise 'Operation Type not supported.' unless @feed_type == Feed::Type.PRODUCT
-      submit :partial_update, false, *resources
+      submit resources, :partial_update
     end
 
     def delete(*resources)
-      submit :delete, false, *resources
+      submit resources, :delete
     end
 
-    def submit(operation_type, purge_and_replace, *resources)
+    def submit(resources, def_operation_type=nil, purge_and_replace=false)
       root = @message_type.val
       messages = []
       feed = Feed.new merchant: @merchant, message_type: @message_type do
         resources.each do | resource |
+          operation_type = def_operation_type
+          if resource.respond_to?(:operation_type) and resource.operation_type
+            operation_type = resource.operation_type
+          end 
           messages << message(resource.sku, operation_type) do | builder |
             resource.to_xml root, builder
           end
