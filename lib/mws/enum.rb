@@ -8,14 +8,24 @@ module  Mws
 
     def initialize(entries)
       @reverse = {}
+      @entries = []
       entries.each do | key, values |
         entry = EnumEntry.new(key, values)
+        @entries << entry
         @reverse[key] = entry
         values = [ values ] unless values.respond_to? :each
         values.each do | value |
           @reverse[value] = entry
         end
       end
+    end
+
+    def syms
+      @entries.map { |it| it.sym }
+    end
+
+    def vals
+      @entries.map { |it| it.val }.flatten
     end
 
     def for(it)

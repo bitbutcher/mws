@@ -57,6 +57,22 @@ module Mws
       
     end
 
+    context '#syms' do
+
+      it 'should provide the set of symbols' do
+        OrderStatus.syms.should == options.keys
+      end
+
+    end
+
+    context '#vals' do
+
+      it 'should provide the list of values' do
+        OrderStatus.vals.should == options.values.flatten
+      end
+
+    end
+
     it 'should be able to provide a symbol for an entry' do
       OrderStatus.PENDING.sym.should == :pending
     end
