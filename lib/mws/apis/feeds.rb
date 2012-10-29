@@ -13,6 +13,7 @@ module Mws::Apis::Feeds
   autoload :Shipping, 'mws/apis/feeds/shipping'
   autoload :SubmissionInfo, 'mws/apis/feeds/submission_info'
   autoload :SubmissionResult, 'mws/apis/feeds/submission_result'
+  autoload :TargetedApi, 'mws/apis/feeds/api'
   autoload :Transaction, 'mws/apis/feeds/transaction'
 
 end
