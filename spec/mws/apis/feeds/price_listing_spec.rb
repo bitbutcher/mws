@@ -79,7 +79,7 @@ module Mws::Apis::Feeds
               SalePrice '12.99', currency: 'EUR'
             }
           }
-        end.to_xml
+        end.doc.root.to_xml
         price.to_xml.should == expected
       end
 

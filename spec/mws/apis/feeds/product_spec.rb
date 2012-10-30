@@ -183,7 +183,7 @@ module Mws::Apis::Feeds
               MSRP 19.99, currency: 'USD'
             }
           }
-        end.to_xml
+        end.doc.root.to_xml
 
         expected.should == Product.new('12343') do
           upc '432154321'
@@ -229,7 +229,7 @@ module Mws::Apis::Feeds
               }
             }
           }
-        end.to_xml
+        end.doc.root.to_xml
 
         expected.should == Product.new('12343') do 
           category :ce

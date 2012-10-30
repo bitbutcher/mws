@@ -124,7 +124,7 @@ module Mws::Apis::Feeds
             FulfillmentLatency 3
             SwitchFulfillmentTo 'MFN'
           }
-        end.to_xml
+        end.doc.root.to_xml
         inventory.to_xml.should == expected
       end
 

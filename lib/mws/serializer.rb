@@ -5,22 +5,22 @@ module Mws
     def self.tree(name, parent, &block)
       if parent
         parent.send(name, &block)
-        parent.to_xml
+        parent.doc.root.to_xml
       else
         Nokogiri::XML::Builder.new do | xml |
           xml.send(name, &block)
-        end.to_xml.root
+        end.doc.root.to_xml
       end
     end
 
     def self.leaf(name, parent, value, attributes)
       if parent
         parent.send(name, value, attributes)
-        parent.to_xml
+        parent.doc.root.to_xml
       else
         Nokogiri::XML::Builder.new do | xml |
           xml.send(name, value, attributes)
-        end.to_xml.root
+        end.doc.root.to_xml
       end
     end
 
