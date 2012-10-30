@@ -95,8 +95,8 @@ module Mws::Apis::Feeds
         
         message = result.message_results['1']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
-        message.result_code.should == 8560
-        message.result_description == 'Result description 1'
+        message.code.should == 8560
+        message.description == 'Result description 1'
         message.additional_info.should == {
           sku: '3455449'
         }
@@ -104,16 +104,16 @@ module Mws::Apis::Feeds
 
         message = result.message_results['2']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
-        message.result_code.should == 5000
-        message.result_description == 'Result description 2'
+        message.code.should == 5000
+        message.description == 'Result description 2'
         message.additional_info.should == {
           sku: '8744969'
         }
 
         message = result.message_results['3']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.WARNING.sym
-        message.result_code.should == 5001
-        message.result_description == 'Result description 3'
+        message.code.should == 5001
+        message.description == 'Result description 3'
         message.additional_info.should == {
           sku: '7844970'
         }

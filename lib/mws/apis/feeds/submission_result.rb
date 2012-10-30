@@ -47,13 +47,13 @@ class Mws::Apis::Feeds::SubmissionResult
     private_class_method :new
 
 
-    attr_accessor :id, :result, :result_code, :result_description, :additional_info
+    attr_accessor :id, :result, :code, :description, :additional_info
 
     def initialize(node)
       @id = node.xpath('MessageID').first.text.to_s
       @result = MessageResultCode.for(node.xpath('ResultCode').first.text.to_s).sym
-      @result_code = node.xpath('ResultMessageCode').first.text.to_i
-      @result_description = node.xpath('ResultDescription').first.text.to_s
+      @code = node.xpath('ResultMessageCode').first.text.to_i
+      @description = node.xpath('ResultDescription').first.text.to_s
       node.xpath('AdditionalInfo').each do | info |
         @additional_info = Mws::Serializer.new.hash_for(info, 'additional_info') 
       end
