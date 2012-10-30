@@ -10,7 +10,7 @@ class Mws::Apis::Feeds::SubmissionResult
 
   MessageResultCode = Mws::Enum.for error: 'Error', warning: 'Warning'
 
-  attr_reader :message_id, :transaction_id, :status, :message_results
+  attr_reader :message_id, :transaction_id, :status
   
   def initialize(node)
     @transaction_id = node.xpath('ProcessingReport/DocumentTransactionID').first.text.to_s
@@ -24,7 +24,7 @@ class Mws::Apis::Feeds::SubmissionResult
     @message_results = {}
     node.xpath('ProcessingReport/Result').each do | result_node |
       result = MessageResult.from_xml(result_node)
-      @message_results[result.id] = result 
+      @message_results[result.id.to_sym] = result 
     end
   end
 
@@ -40,12 +40,15 @@ class Mws::Apis::Feeds::SubmissionResult
     type.nil? ? @message_count : @message_counts[type]
   end
 
+  def message_for(id)
+    @message_results[id.to_s.to_sym]
+  end
+
   class MessageResult
 
     private :initialize
 
     private_class_method :new
-
 
     attr_accessor :id, :result, :code, :description, :additional_info
 

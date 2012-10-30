@@ -3,6 +3,10 @@ require 'nokogiri'
 
 module Mws::Apis::Feeds
 
+  class SubmissionResult
+    attr_reader :message_results
+  end
+
   describe 'SubmissionResult' do 
     let(:success_node) do
       Nokogiri::XML::Builder.new do
@@ -91,9 +95,9 @@ module Mws::Apis::Feeds
         result.message_count(:success).should == 0
         result.message_count(:error).should == 2
         result.message_count(:warning).should == 1
-        result.message_results.length.should == 3
-        
-        message = result.message_results['1']
+        result.message_results.size.should == 3
+
+        message = result.message_for 1
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
         message.code.should == 8560
         message.description == 'Result description 1'
@@ -102,7 +106,7 @@ module Mws::Apis::Feeds
         }
 
 
-        message = result.message_results['2']
+        message = result.message_for 2
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
         message.code.should == 5000
         message.description == 'Result description 2'
@@ -110,7 +114,7 @@ module Mws::Apis::Feeds
           sku: '8744969'
         }
 
-        message = result.message_results['3']
+        message = result.message_for 3
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.WARNING.sym
         message.code.should == 5001
         message.description == 'Result description 3'
