@@ -59,15 +59,15 @@ class Mws::Connection
   def parse(body, overrides)
     doc = Nokogiri::XML(body)
     doc.remove_namespaces!
-    # puts doc.to_xml
-    # puts "------------------------======----------------------------"
+    puts doc.to_xml
+    puts "------------------------======----------------------------"
     doc.xpath('/ErrorResponse/Error').each do | error |
       options = {}
       error.element_children.each { |node| options[node.name.downcase.to_sym] = node.text }
       raise Mws::Errors::ServerError.new(options)
     end
     result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
-    # puts result
+    puts result
     result
   end
 
