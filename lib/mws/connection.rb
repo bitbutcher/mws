@@ -28,6 +28,8 @@ class Mws::Connection
   private
 
   def request(method, path, params, body, overrides)
+    puts "------------------------BODY----------------------------"
+    puts body
     query = Mws::Query.new({
       action: overrides[:action],
       version: overrides[:version],
