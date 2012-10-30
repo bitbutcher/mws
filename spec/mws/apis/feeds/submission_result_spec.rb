@@ -92,12 +92,8 @@ module Mws::Apis::Feeds
         result.message_count(:error).should == 2
         result.message_count(:warning).should == 1
         result.message_results.length.should == 3
-        messages = {}
-        result.message_results.each do | message_result |
-          messages[message_result.id] = message_result
-        end
-
-        message = messages['1']
+        
+        message = result.message_results['1']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
         message.result_code.should == 8560
         message.result_description == 'Result description 1'
@@ -106,7 +102,7 @@ module Mws::Apis::Feeds
         }
 
 
-        message = messages['2']
+        message = result.message_results['2']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
         message.result_code.should == 5000
         message.result_description == 'Result description 2'
@@ -114,7 +110,7 @@ module Mws::Apis::Feeds
           sku: '8744969'
         }
 
-        message = messages['3']
+        message = result.message_results['3']
         message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.WARNING.sym
         message.result_code.should == 5001
         message.result_description == 'Result description 3'

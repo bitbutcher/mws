@@ -21,9 +21,10 @@ class Mws::Apis::Feeds::SubmissionResult
     [MessageCountType.SUCCESS, MessageCountType.ERROR, MessageCountType.WARNING].each do | type |
       @message_counts[type.sym] = node.xpath("ProcessingReport/ProcessingSummary/#{type.val}").first.text.to_i
     end
-    @message_results = []
+    @message_results = {}
     node.xpath('ProcessingReport/Result').each do | result_node |
-      @message_results << MessageResult.from_xml(result_node)
+      result = MessageResult.from_xml(result_node)
+      @message_results[result.id] = result 
     end
   end
 
