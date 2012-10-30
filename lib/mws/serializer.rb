@@ -9,7 +9,7 @@ module Mws
       else
         Nokogiri::XML::Builder.new do | xml |
           xml.send(name, &block)
-        end.to_xml
+        end.to_xml.root
       end
     end
 
@@ -20,7 +20,7 @@ module Mws
       else
         Nokogiri::XML::Builder.new do | xml |
           xml.send(name, value, attributes)
-        end.to_xml
+        end.to_xml.root
       end
     end
 
