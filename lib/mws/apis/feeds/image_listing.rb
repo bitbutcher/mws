@@ -19,18 +19,10 @@ module Mws::Apis::Feeds
     end
 
     def to_xml(name='ProductImage', parent=nil)
-      block = lambda { |xml| 
+      Mws::Serializer.tree name, parent do  |xml| 
         xml.SKU @sku
         xml.ImageType @type
         xml.ImageLocation @url
-      }
-      if parent
-        parent.send(name, &block)
-        parent.to_xml
-      else
-        Nokogiri::XML::Builder.new do | xml |
-          xml.send(name, &block)
-        end.to_xml
       end
     end
 
