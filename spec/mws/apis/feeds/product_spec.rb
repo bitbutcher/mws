@@ -22,17 +22,19 @@ module Mws::Apis::Feeds
         capture.should be_an_instance_of Product::ProductBuilder
       end
 
-      it 'should support building with upc, tax code, brand and name' do
+      it 'should support building with upc, tax code, brand, manufacture and name' do
         product = Product.new('12324') do
           upc '4321'
           tax_code 'GEN_TAX_CODE'
           brand 'Test Brand'
+          manufacture 'Test manufacture'
           name 'Test Product'
         end
 
         product.upc.should == '4321'
         product.tax_code.should == 'GEN_TAX_CODE'
         product.brand.should == 'Test Brand'
+        product.manufacture.should == 'Test manufacture'
         product.name.should == 'Test Product'
       end
 
@@ -181,6 +183,7 @@ module Mws::Apis::Feeds
               PackageWeight 2, unitOfMeasure: 'LB'
               ShippingWeight 3, unitOfMeasure: 'MG'
               MSRP 19.99, currency: 'USD'
+              Manufacture 'Test manufacture'
             }
           }
         end.doc.root.to_xml
@@ -192,6 +195,7 @@ module Mws::Apis::Feeds
           name 'Test Product'
           description 'Some product'
           msrp 19.99, 'USD'
+          manufacture 'Test manufacture'
           bullet_point 'Bullet Point 1'
           bullet_point 'Bullet Point 2'
           bullet_point 'Bullet Point 3'
