@@ -71,7 +71,7 @@ module Mws::Apis::Feeds
           @shipping_weight.to_xml('ShippingWeight', xml) unless @shipping_weight.nil?
 
           @msrp.to_xml 'MSRP', xml unless @msrp.nil?
-          puts "XML: #{xml}"
+
           xml.Manufacture @manufacture unless @manufacture.nil?
         }
 
