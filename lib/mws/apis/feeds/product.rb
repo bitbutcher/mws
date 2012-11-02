@@ -39,7 +39,7 @@ module Mws::Apis::Feeds
 
     attr_reader :sku, :description
 
-    attr_accessor :upc, :tax_code, :msrp, :brand, :manufacture, :name, :description, :bullet_points
+    attr_accessor :upc, :tax_code, :msrp, :brand, :manufacturer, :name, :description, :bullet_points
     attr_accessor :item_dimensions, :package_dimensions, :package_weight, :shipping_weight
     attr_accessor :category, :details
 
@@ -72,7 +72,7 @@ module Mws::Apis::Feeds
 
           @msrp.to_xml 'MSRP', xml unless @msrp.nil?
 
-          xml.Manufacture @manufacture unless @manufacture.nil?
+          xml.Manufacturer @manufacturer unless @manufacturer.nil?
         }
 
         unless @details.nil?

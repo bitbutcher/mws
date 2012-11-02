@@ -27,14 +27,14 @@ module Mws::Apis::Feeds
           upc '4321'
           tax_code 'GEN_TAX_CODE'
           brand 'Test Brand'
-          manufacture 'Test manufacture'
+          manufacturer 'Test manufacture'
           name 'Test Product'
         end
 
         product.upc.should == '4321'
         product.tax_code.should == 'GEN_TAX_CODE'
         product.brand.should == 'Test Brand'
-        product.manufacture.should == 'Test manufacture'
+        product.manufacturer.should == 'Test manufacture'
         product.name.should == 'Test Product'
       end
 
@@ -183,7 +183,7 @@ module Mws::Apis::Feeds
               PackageWeight 2, unitOfMeasure: 'LB'
               ShippingWeight 3, unitOfMeasure: 'MG'
               MSRP 19.99, currency: 'USD'
-              Manufacture 'Test manufacture'
+              Manufacturer 'Test manufacture'
             }
           }
         end.doc.root.to_xml
@@ -195,7 +195,7 @@ module Mws::Apis::Feeds
           name 'Test Product'
           description 'Some product'
           msrp 19.99, 'USD'
-          manufacture 'Test manufacture'
+          manufacturer 'Test manufacture'
           bullet_point 'Bullet Point 1'
           bullet_point 'Bullet Point 2'
           bullet_point 'Bullet Point 3'
