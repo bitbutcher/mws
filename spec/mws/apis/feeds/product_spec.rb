@@ -57,14 +57,10 @@ module Mws::Apis::Feeds
           }
         end
 
-        product.item_dimensions.length.value.should == 2
-        product.item_dimensions.length.unit.should == :feet
-        product.item_dimensions.width.value.should == 3
-        product.item_dimensions.width.unit.should == :inches
-        product.item_dimensions.height.value.should == 1 
-        product.item_dimensions.height.unit.should == :meters
-        product.item_dimensions.weight.value.should == 4 
-        product.item_dimensions.weight.unit.should == :pounds
+        product.item_dimensions.length.should == Distance.new(2, :feet)
+        product.item_dimensions.width.should == Distance.new(3, :inches)
+        product.item_dimensions.height.should == Distance.new(1, :meters)
+        product.item_dimensions.weight.should == Weight.new(4, :pounds)
       end
 
       it 'should support building with package dimensions' do
@@ -77,14 +73,10 @@ module Mws::Apis::Feeds
           }
         end
 
-        product.package_dimensions.length.value.should == 2
-        product.package_dimensions.length.unit.should == :feet
-        product.package_dimensions.width.value.should == 3
-        product.package_dimensions.width.unit.should == :inches
-        product.package_dimensions.height.value.should == 1 
-        product.package_dimensions.height.unit.should == :meters
-        product.package_dimensions.weight.value.should == 4 
-        product.package_dimensions.weight.unit.should == :pounds
+        product.package_dimensions.length.should == Distance.new(2, :feet)
+        product.package_dimensions.width.should == Distance.new(3, :inches)
+        product.package_dimensions.height.should == Distance.new(1, :meters)
+        product.package_dimensions.weight.should == Weight.new(4, :pounds)
       end
     
       it 'should require valid package and shipping dimensions' do
@@ -122,10 +114,8 @@ module Mws::Apis::Feeds
           shipping_weight 4, :ounces
         end
 
-        product.package_weight.value.should == 3
-        product.package_weight.unit.should == :pounds
-        product.shipping_weight.value.should == 4
-        product.shipping_weight.unit.should == :ounces
+        product.package_weight.should == Weight.new(3, :pounds)
+        product.shipping_weight.should == Weight.new(4, :ounces)
       end
 
       it 'should support building with product details' do

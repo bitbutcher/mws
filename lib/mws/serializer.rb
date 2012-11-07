@@ -51,6 +51,8 @@ module Mws
           end
         elsif data.respond_to? :each
           data.each { |value| xml_for(name, value, builder, path) }
+        elsif data.respond_to? :to_xml
+          data.to_xml element, builder
         else
           builder.send element, data
         end

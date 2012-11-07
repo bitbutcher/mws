@@ -2,26 +2,6 @@ module Mws::Apis::Feeds
 
   class Product
 
-    LengthUnit = Mws::Enum.for(
-      inches: 'inches',
-      feet: 'feet',
-      meters: 'meters',
-      decimeters: 'decimeters',
-      centimeters:'centimeters',
-      millimeters:'millimeters',
-      micrometers: 'micrometers',
-      nanometers: 'nanometers',
-      picometers: 'picometers'
-    )
-
-    WeightUnit = Mws::Enum.for(
-      grams: 'GR',
-      kilograms: 'KG',
-      ounces: 'OZ',
-      pounds: 'LB',
-      miligrams: 'MG'
-    )
-
     CategorySerializer = Mws::Serializer.new do
       ce {
         to { | key, value, doc, path |
@@ -103,7 +83,7 @@ module Mws::Apis::Feeds
       end
 
       def msrp(amount, currency)
-        @product.msrp = Mws::Apis::Feeds::MonetaryAmount.new amount, currency
+        @product.msrp = Mws::Apis::Feeds::Money.new amount, currency
       end
 
       def item_dimensions(&block)
@@ -117,11 +97,11 @@ module Mws::Apis::Feeds
       end
 
       def package_weight(value, unit)
-        @product.package_weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
+        @product.package_weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
 
       def shipping_weight(value, unit)
-        @product.shipping_weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
+        @product.shipping_weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
 
       def bullet_point(bullet_point)
@@ -150,35 +130,6 @@ module Mws::Apis::Feeds
 
     end
 
-    class Dimension
-
-      attr_reader :value
-
-      def initialize(value, unit)
-        @unit = unit
-        @value = value
-      end
-
-      def unit
-        @unit.sym
-      end
-
-      def to_xml(name='Dimension', parent=nil)
-        Mws::Serializer.leaf name, parent, @value, unitOfMeasure: @unit.val
-      end
-
-      def self.require_valid_length_unit(unit)
-        raise ArgumentError, "Not a valid unit of length - #{unit}" if LengthUnit.for(unit).nil?
-        LengthUnit.for(unit)
-      end
-
-      def self.require_valid_weight_unit(unit)
-        raise ArgumentError, "Not a valid unit of weight - #{unit}" if WeightUnit.for(unit).nil?
-        WeightUnit.for(unit)
-      end
-
-    end
-
     class DimensionsBuilder
 
       def initialize(dimensions)
@@ -186,19 +137,19 @@ module Mws::Apis::Feeds
       end
 
       def length(value, unit)
-        @dimensions.length = Dimension.new value, Dimension.require_valid_length_unit(unit)
+        @dimensions.length = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
       def width(value, unit)
-        @dimensions.width = Dimension.new value, Dimension.require_valid_length_unit(unit)
+        @dimensions.width = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
       def height(value, unit)
-        @dimensions.height = Dimension.new value, Dimension.require_valid_length_unit(unit)
+        @dimensions.height = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
       def weight(value, unit)
-        @dimensions.weight = Dimension.new value, Dimension.require_valid_weight_unit(unit)
+        @dimensions.weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
     end
 

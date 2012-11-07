@@ -3,10 +3,12 @@ require 'hashie'
 module Mws::Apis::Feeds
 
   autoload :Api, 'mws/apis/feeds/api'
+  autoload :Distance, 'mws/apis/feeds/distance'
   autoload :Feed, 'mws/apis/feeds/feed'
   autoload :ImageListing, 'mws/apis/feeds/image_listing'
   autoload :Inventory, 'mws/apis/feeds/inventory'
-  autoload :MonetaryAmount, 'mws/apis/feeds/monetary_amount'
+  autoload :Measurement, 'mws/apis/feeds/measurement'
+  autoload :Money, 'mws/apis/feeds/money'
   autoload :PriceListing, 'mws/apis/feeds/price_listing'
   autoload :Product, 'mws/apis/feeds/product'
   autoload :SalePrice, 'mws/apis/feeds/sale_price'
@@ -15,5 +17,6 @@ module Mws::Apis::Feeds
   autoload :SubmissionResult, 'mws/apis/feeds/submission_result'
   autoload :TargetedApi, 'mws/apis/feeds/api'
   autoload :Transaction, 'mws/apis/feeds/transaction'
+  autoload :Weight, 'mws/apis/feeds/weight'
 
 end
