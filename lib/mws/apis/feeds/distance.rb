@@ -14,8 +14,8 @@ module Mws::Apis::Feeds
       picometers: 'picometers'
     )
 
-    def initialize(amount, unit=:feet)
-      super amount, unit
+    def initialize(amount, unit=nil)
+      super amount, unit || :feet
     end
 
   end

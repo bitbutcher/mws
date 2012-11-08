@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 module Mws
 
   class Serializer
@@ -24,38 +26,25 @@ module Mws
       end
     end
 
-    def initialize(exceptions={}, &block)
+    def initialize(exceptions={})
       @exceptions = exceptions
-      if block_given?
-        builder = ExceptionBuilder.new(@exceptions)
-        builder.instance_exec &block
-      end
-    end
-
-    def proceed(data, builder, path)
-      data.each do | key, value |
-        xml_for(key, value, builder, path)
-      end
     end
 
     def xml_for(name, data, builder, context=nil)
-      element = Mws::Utils.camelize(name)
+      element = @exceptions[name.to_sym] || Mws::Utils.camelize(name)
       path = path_for name, context
-      exception = @exceptions[path]
-      if exception and exception.include? :to
-        instance_exec name, data, builder, path, &exception[:to]      
-      else
-        if data.respond_to? :keys
-          builder.send(element) do | b |
-            proceed(data, b, path)
+      if data.respond_to? :keys
+        builder.send(element) do | b |
+          data.each do | key, value |
+            xml_for(key, value, builder, path)
           end
-        elsif data.respond_to? :each
-          data.each { |value| xml_for(name, value, builder, path) }
-        elsif data.respond_to? :to_xml
-          data.to_xml element, builder
-        else
-          builder.send element, data
         end
+      elsif data.respond_to? :each
+        data.each { |value| xml_for(name, value, builder, path) }
+      elsif data.respond_to? :to_xml
+        data.to_xml element, builder
+      else
+        builder.send element, data
       end
     end
 
@@ -83,37 +72,6 @@ module Mws
 
     def path_for(name, context=nil)
       [ context, name ].compact.join '.'
-    end
-
-  end
-
-  class ExceptionBuilder
-
-    attr_reader :context
-
-    def initialize(exceptions={}, context=nil, &block)
-      @exceptions = exceptions
-      @context = context
-    end
-
-    def to(&block)
-      _exception[:to] = block
-    end
-
-    def from(&block)
-      _exception[:from] = block
-    end
-
-    def method_missing(method, *args, &block)
-      builder = self.class.new @exceptions, [ @context, method ].compact.join('.')
-      return builder unless block_given?
-      builder.instance_exec &block
-    end
-
-    private
-
-    def _exception
-      @exceptions[@context] ||= {}
     end
 
   end

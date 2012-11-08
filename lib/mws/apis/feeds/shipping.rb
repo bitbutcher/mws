@@ -136,7 +136,7 @@ class Mws::Apis::Feeds::Shipping
 
     def override(type, amount, currency, region, speed, variant)
       @target << Override.new(Option.new(region, speed, variant), type, 
-        Mws::Apis::Feeds::MonetaryAmount.new(amount, currency))
+        Mws::Apis::Feeds::Money.new(amount, currency))
     end
 
     def adjust(amount, currency, region, speed, variant=nil)

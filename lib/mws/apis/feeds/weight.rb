@@ -10,8 +10,8 @@ module Mws::Apis::Feeds
       miligrams: 'MG'
     )
 
-    def initialize(amount, unit=:pounds)
-      super amount, unit
+    def initialize(amount, unit=nil)
+      super amount, unit || :pounds
     end
 
   end

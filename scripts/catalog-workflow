@@ -53,7 +53,7 @@ workflow = Workflow.new(in_process_q)
 
 workflow.register do
   product_feed = mws.feeds.products.add(
-    Mws::Apis::Feeds::Product.new('2634897') do
+    Mws::Product('2634897') do
       tax_code 'A_GEN_TAX'
       name "Rocketfish\u2122 6' In-Wall HDMI Cable"
       brand "Rocketfish\u2122"
@@ -66,24 +66,21 @@ workflow.register do
       category :ce
       details {
         cable_or_adapter {
-          cable_length {
-            length 6
-            unit_of_measure :feet
-          }
+          cable_length as_distance 6, :feet
         }
       }
     end
   )
   workflow.register product_feed.id do
     price_feed = mws.feeds.prices.add(
-      Mws::Apis::Feeds::PriceListing.new('2634897', 49.99).on_sale(29.99, Time.now, 3.months.from_now)
+      Mws::PriceListing('2634897', 49.99).on_sale(29.99, Time.now, 3.months.from_now)
     )
     image_feed = mws.feeds.images.add(
-      Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897_sa.jpg', 'Main'),
-      Mws::Apis::Feeds::ImageListing.new('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897cv1a.jpg', 'PT1')
+      Mws::ImageListing('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897_sa.jpg', 'Main'),
+      Mws::ImageListing('2634897', 'http://images.bestbuy.com/BestBuy_US/images/products/2634/2634897cv1a.jpg', 'PT1')
     )
     shipping_feed = mws.feeds.shipping.add(
-      Mws::Apis::Feeds::Shipping.new('2634897') {
+      Mws::Shipping('2634897') {
         restricted :alaska_hawaii, :standard, :po_box
         adjust 4.99, :usd, :continental_us, :standard
         replace 11.99, :usd, :continental_us, :expedited, :street
@@ -91,7 +88,7 @@ workflow.register do
     )
     workflow.register price_feed.id, image_feed.id, shipping_feed.id do
       inventory_feed = mws.feeds.inventory.add(
-        Mws::Apis::Feeds::Inventory.new('2634897', quantity: 10, fulfillment_type: :mfn)
+        Mws::Inventory('2634897', quantity: 10, fulfillment_type: :mfn)
       )
       workflow.register inventory_feed.id do
         puts 'The workflow is complete!'

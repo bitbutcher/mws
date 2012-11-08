@@ -16,6 +16,16 @@ module Mws
   # The current version of this ruby gem
   VERSION = '0.0.1'
 
+  Utils.alias self, Apis::Feeds, 
+    :Distance,
+    :ImageListing,
+    :Inventory,
+    :Money,
+    :PriceListing,
+    :Product,
+    :Shipping,
+    :Weight
+
   def self.connect(options)
     Connection.new options
   end

@@ -14,7 +14,7 @@ module Mws::Apis::Feeds
     Unit = Currency
 
     def initialize(amount, currency=nil)
-      raise ArgumentError.new("Invalid currency '#{currency}'") if currency and Currency.for(currency).nil?
+      raise ArgumentError, "Invalid currency '#{currency}'" if currency and Currency.for(currency).nil?
       super(amount, currency || :usd)
     end
 

@@ -2,20 +2,7 @@ module Mws::Apis::Feeds
 
   class Product
 
-    CategorySerializer = Mws::Serializer.new do
-      ce {
-        to { | key, value, doc, path |
-          doc.send(key.upcase) do | builder |
-            proceed(value, builder, path)
-          end
-        }
-        product_type.cable_or_adapter.cable_length {
-          to { | key, value, doc, path |
-            doc.send(Mws::Utils.camelize(key), value[:length], unitOfMeasure: value[:unit_of_measure])
-          }
-        }
-      }
-    end
+    CategorySerializer = Mws::Serializer.new ce: 'CE', fba: 'FBA', eu_compliance: 'EUCompliance'
 
     attr_reader :sku, :description
 
@@ -27,6 +14,7 @@ module Mws::Apis::Feeds
       @sku = sku
       @bullet_points = []
       ProductBuilder.new(self).instance_eval &block if block_given?
+      raise ArgumentError, 'Product must have a category when details are specified.' if @details and @category.nil?
     end
 
     def to_xml(name='Product', parent=nil)
@@ -56,7 +44,6 @@ module Mws::Apis::Feeds
         }
 
         unless @details.nil?
-          @category ||= :ce
           xml.ProductData {
             CategorySerializer.xml_for @category, {product_type: @details}, xml
           }
@@ -158,6 +145,18 @@ module Mws::Apis::Feeds
       def initialize(details)
         @details = details
       end
+
+      def as_distance(amount, unit=nil)
+        Mws::Apis::Feeds::Distance.new amount, unit
+      end
+
+      def as_weight(amount, unit=nil)
+        Mws::Apis::Feeds::Weight.new amount, unit
+      end
+
+      def as_money(amount, currency=nil)
+        Mws::Apis::Feeds::Money.new amount, currency
+      end            
 
       def method_missing(method, *args, &block)
         if block_given?

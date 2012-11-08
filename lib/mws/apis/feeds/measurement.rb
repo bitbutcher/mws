@@ -7,7 +7,7 @@ module Mws::Apis::Feeds
     def initialize(amount, unit)
       @amount = amount
       @units = self.class.const_get(:Unit)
-      raise ArgumentError.new("Invalid unit of measure '#{unit}'") if @units.for(unit).nil?
+      raise ArgumentError, "Invalid unit of measure '#{unit}'" if @units.for(unit).nil?
       @unit = unit
     end
 

@@ -25,8 +25,8 @@ module Mws::Apis::Feeds
       Mws::Serializer.tree name, parent do |xml| 
         xml.SKU @sku
         @base.to_xml 'StandardPrice', xml
-        @min.to_xml('MAP', xml) if @min
-        @sale.to_xml('Sale', xml) if @sale
+        @min.to_xml 'MAP', xml if @min
+        @sale.to_xml 'Sale', xml if @sale
       end
     end
 
@@ -35,10 +35,10 @@ module Mws::Apis::Feeds
     def validate
       if @min
         unless @min.amount < @base.amount
-          raise ArgumentError.new("'Base Price' must be greater than 'Minimum Advertised Price'.") 
+          raise ArgumentError, "'Base Price' must be greater than 'Minimum Advertised Price'."
         end
         if @sale and @sale.price.amount <= @min.amount
-          raise ArgumentError.new("'Sale Price' must be greater than 'Minimum Advertised Price'.")
+          raise ArgumentError, "'Sale Price' must be greater than 'Minimum Advertised Price'."
         end
       end
     end

@@ -120,6 +120,7 @@ module Mws::Apis::Feeds
 
       it 'should support building with product details' do
         product = Product.new '12343' do
+          category :ce
           details {
             value 'some value'
             nested {
@@ -136,6 +137,23 @@ module Mws::Apis::Feeds
         product.details[:nested][:foo].should == 'bar'
         product.details[:nested][:nested][:baz].should == 'bahhh'
       end
+
+      it 'should require a category when product details are specified' do
+        expect {
+          Product.new '12343' do
+            details {
+              value 'some value'
+              nested {
+                foo 'bar'
+                nested {
+                  baz 'bahhh'
+                }
+              }
+            }
+          end
+        }.to raise_error ArgumentError, 'Product must have a category when details are specified.'
+      end
+
     end
 
     context '#to_xml' do
@@ -229,10 +247,7 @@ module Mws::Apis::Feeds
           category :ce
           details {
             cable_or_adapter {
-              cable_length {
-                length 6
-                unit_of_measure :feet
-              }
+              cable_length as_distance 6, :feet
             }    
           }
         end.to_xml
