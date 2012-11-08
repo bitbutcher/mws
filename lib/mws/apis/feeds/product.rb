@@ -83,11 +83,11 @@ module Mws::Apis::Feeds
         DimensionsBuilder.new(@product.package_dimensions).instance_eval &block if block_given?
       end
 
-      def package_weight(value, unit)
+      def package_weight(value, unit=nil)
         @product.package_weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
 
-      def shipping_weight(value, unit)
+      def shipping_weight(value, unit=nil)
         @product.shipping_weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
 
@@ -123,19 +123,19 @@ module Mws::Apis::Feeds
         @dimensions = dimensions
       end
 
-      def length(value, unit)
+      def length(value, unit=nil)
         @dimensions.length = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
-      def width(value, unit)
+      def width(value, unit=nil)
         @dimensions.width = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
-      def height(value, unit)
+      def height(value, unit=nil)
         @dimensions.height = Mws::Apis::Feeds::Distance.new(value, unit)
       end
 
-      def weight(value, unit)
+      def weight(value, unit=nil)
         @dimensions.weight = Mws::Apis::Feeds::Weight.new(value, unit)
       end
     end
