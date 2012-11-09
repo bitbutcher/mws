@@ -19,7 +19,9 @@ module Mws::Apis::Feeds
 
     def to_xml(name=nil, parent=nil)
       name ||= self.class.name.split('::').last
-      Mws::Serializer.leaf name, parent, @amount, unitOfMeasure: @units.for(@unit).val
+      amount = @amount 
+      amount = '%.2f' % amount if amount.to_s =~ /\d*\.\d\d+/
+      Mws::Serializer.leaf name, parent, amount, unitOfMeasure: @units.for(@unit).val
     end
 
   end
