@@ -28,6 +28,7 @@ class Mws::Apis::Feeds::Shipping
   attr_reader :sku
 
   def initialize(sku, &block)
+    raise Mws::Errors::ValidationError.new('SKU is required.') if sku.nil? or sku.to_s.strip.empty?
     @sku = sku
     @options = []
     Builder.new(self).instance_eval &block if block_given?
@@ -66,6 +67,7 @@ class Mws::Apis::Feeds::Shipping
     end
 
     def to_s
+      return @speed.val if [ Speed.TWO_DAY, Speed.ONE_DAY ].include? @speed
       [ @speed, @region, @variant ].compact.map { |it| it.val }.join ' '
     end
 
