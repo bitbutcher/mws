@@ -18,6 +18,7 @@ module Mws
 
   Utils.alias self, Apis::Feeds, 
     :Distance,
+    :Feed,
     :ImageListing,
     :Inventory,
     :Money,

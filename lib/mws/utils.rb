@@ -37,10 +37,12 @@ module Mws::Utils
   end
 
   def alias(to, from, *constants)
-    constants.each do | constant |
-      to.singleton_class.send(:define_method, constant) do | *args, &block |
-        from.const_get(constant).new *args, &block
+    constants.each do | name |
+      constant = from.const_get(name)
+      to.singleton_class.send(:define_method, name) do | *args, &block |
+        constant.new *args, &block
       end
+      to.const_set(name, constant)
     end
   end
 
