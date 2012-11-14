@@ -4,7 +4,7 @@ require 'nokogiri'
 module Mws::Apis::Feeds
 
   class SubmissionResult
-    attr_reader :message_results
+    attr_reader :responses
   end
 
   describe 'SubmissionResult' do 
@@ -79,46 +79,46 @@ module Mws::Apis::Feeds
       it 'should be able to be constructed from valid success xml' do
         result = SubmissionResult.from_xml success_node
         result.transaction_id.should == '5868304010'
-        result.status.should == Mws::Apis::Feeds::SubmissionResult::Status.COMPLETE.sym
-        result.message_count.should == 1
-        result.message_count(:success).should == 1
-        result.message_count(:error).should == 0
-        result.message_count(:warning).should == 0
-        result.message_results.should be_empty
+        result.status.should == SubmissionResult::Status.COMPLETE.sym
+        result.messages_processed.should == 1
+        result.count_for(:success).should == 1
+        result.count_for(:error).should == 0
+        result.count_for(:warning).should == 0
+        result.responses.should be_empty
       end
 
       it 'should be able to be constructed from valid error xml' do 
         result = SubmissionResult.from_xml error_node
         result.transaction_id.should == '5868304010'
-        result.status.should == Mws::Apis::Feeds::SubmissionResult::Status.COMPLETE.sym
-        result.message_count.should == 2
-        result.message_count(:success).should == 0
-        result.message_count(:error).should == 2
-        result.message_count(:warning).should == 1
-        result.message_results.size.should == 3
+        result.status.should == SubmissionResult::Status.COMPLETE.sym
+        result.messages_processed.should == 2
+        result.count_for(:success).should == 0
+        result.count_for(:error).should == 2
+        result.count_for(:warning).should == 1
+        result.responses.size.should == 3
 
-        message = result.message_for 1
-        message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
-        message.code.should == 8560
-        message.description == 'Result description 1'
-        message.additional_info.should == {
+        response = result.response_for 1
+        response.type.should == SubmissionResult::Response::Type.ERROR.sym
+        response.code.should == 8560
+        response.description == 'Result description 1'
+        response.additional_info.should == {
           sku: '3455449'
         }
 
 
-        message = result.message_for 2
-        message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.ERROR.sym
-        message.code.should == 5000
-        message.description == 'Result description 2'
-        message.additional_info.should == {
+        response = result.response_for 2
+        response.type.should == SubmissionResult::Response::Type.ERROR.sym
+        response.code.should == 5000
+        response.description == 'Result description 2'
+        response.additional_info.should == {
           sku: '8744969'
         }
 
-        message = result.message_for 3
-        message.result.should == Mws::Apis::Feeds::SubmissionResult::MessageResultCode.WARNING.sym
-        message.code.should == 5001
-        message.description == 'Result description 3'
-        message.additional_info.should == {
+        response = result.response_for 3
+        response.type.should == SubmissionResult::Response::Type.WARNING.sym
+        response.code.should == 5001
+        response.description == 'Result description 3'
+        response.additional_info.should == {
           sku: '7844970'
         }
       end

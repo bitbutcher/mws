@@ -14,7 +14,7 @@ module Mws::Apis::Feeds
       @sku = sku
       @bullet_points = []
       ProductBuilder.new(self).instance_eval &block if block_given?
-      raise ArgumentError, 'Product must have a category when details are specified.' if @details and @category.nil?
+      raise Mws::Errors::ValidationError, 'Product must have a category when details are specified.' if @details and @category.nil?
     end
 
     def to_xml(name='Product', parent=nil)
@@ -70,7 +70,7 @@ module Mws::Apis::Feeds
       end
 
       def msrp(amount, currency)
-        @product.msrp = Mws::Apis::Feeds::Money.new amount, currency
+        @product.msrp = Money.new amount, currency
       end
 
       def item_dimensions(&block)
@@ -84,11 +84,11 @@ module Mws::Apis::Feeds
       end
 
       def package_weight(value, unit=nil)
-        @product.package_weight = Mws::Apis::Feeds::Weight.new(value, unit)
+        @product.package_weight = Weight.new(value, unit)
       end
 
       def shipping_weight(value, unit=nil)
-        @product.shipping_weight = Mws::Apis::Feeds::Weight.new(value, unit)
+        @product.shipping_weight = Weight.new(value, unit)
       end
 
       def bullet_point(bullet_point)
@@ -124,19 +124,19 @@ module Mws::Apis::Feeds
       end
 
       def length(value, unit=nil)
-        @dimensions.length = Mws::Apis::Feeds::Distance.new(value, unit)
+        @dimensions.length = Distance.new(value, unit)
       end
 
       def width(value, unit=nil)
-        @dimensions.width = Mws::Apis::Feeds::Distance.new(value, unit)
+        @dimensions.width = Distance.new(value, unit)
       end
 
       def height(value, unit=nil)
-        @dimensions.height = Mws::Apis::Feeds::Distance.new(value, unit)
+        @dimensions.height = Distance.new(value, unit)
       end
 
       def weight(value, unit=nil)
-        @dimensions.weight = Mws::Apis::Feeds::Weight.new(value, unit)
+        @dimensions.weight = Weight.new(value, unit)
       end
     end
 
@@ -147,15 +147,15 @@ module Mws::Apis::Feeds
       end
 
       def as_distance(amount, unit=nil)
-        Mws::Apis::Feeds::Distance.new amount, unit
+        Distance.new amount, unit
       end
 
       def as_weight(amount, unit=nil)
-        Mws::Apis::Feeds::Weight.new amount, unit
+        Weight.new amount, unit
       end
 
       def as_money(amount, currency=nil)
-        Mws::Apis::Feeds::Money.new amount, currency
+        Money.new amount, currency
       end            
 
       def method_missing(method, *args, &block)

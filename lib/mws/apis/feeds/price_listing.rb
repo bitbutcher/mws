@@ -35,10 +35,10 @@ module Mws::Apis::Feeds
     def validate
       if @min
         unless @min.amount < @base.amount
-          raise ArgumentError, "'Base Price' must be greater than 'Minimum Advertised Price'."
+          raise Mws::Errors::ValidationError, "'Base Price' must be greater than 'Minimum Advertised Price'."
         end
         if @sale and @sale.price.amount <= @min.amount
-          raise ArgumentError, "'Sale Price' must be greater than 'Minimum Advertised Price'."
+          raise Mws::Errors::ValidationError, "'Sale Price' must be greater than 'Minimum Advertised Price'."
         end
       end
     end

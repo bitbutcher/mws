@@ -50,8 +50,8 @@ module Mws::Apis::Feeds
       it 'should be able to create an info object in a submitted state' do
         info = SubmissionInfo.from_xml submitted_node
         info.id.should == "5868304010"
-        info.status.should == Mws::Apis::Feeds::SubmissionInfo::Status.SUBMITTED.sym
-        info.type.should == Mws::Apis::Feeds::Feed::Type.PRODUCT.sym
+        info.status.should == SubmissionInfo::Status.SUBMITTED.sym
+        info.type.should == Feed::Type.PRODUCT.sym
         info.submitted.should == Time.parse('2012-10-16T21:19:08+00:00')
         info.started.should be_nil
         info.completed.should be_nil
@@ -60,8 +60,8 @@ module Mws::Apis::Feeds
       it 'should be able to create an info object in and in progress state' do
         info = SubmissionInfo.from_xml in_progress_node
         info.id.should == "5868304010"
-        info.status.should == Mws::Apis::Feeds::SubmissionInfo::Status.IN_PROGRESS.sym
-        info.type.should == Mws::Apis::Feeds::Feed::Type.PRODUCT.sym
+        info.status.should == SubmissionInfo::Status.IN_PROGRESS.sym
+        info.type.should == Feed::Type.PRODUCT.sym
         info.submitted.should == Time.parse('2012-10-16T21:19:08+00:00')
         info.started.should == Time.parse('2012-10-16T21:21:35+00:00')
         info.completed.should be_nil
@@ -70,8 +70,8 @@ module Mws::Apis::Feeds
       it 'should be able to create an info object in a done state' do
         info = SubmissionInfo.from_xml done_node
         info.id.should == "5868304010"
-        info.status.should == Mws::Apis::Feeds::SubmissionInfo::Status.DONE.sym
-        info.type.should == Mws::Apis::Feeds::Feed::Type.PRODUCT.sym
+        info.status.should == SubmissionInfo::Status.DONE.sym
+        info.type.should == Feed::Type.PRODUCT.sym
         info.submitted.should == Time.parse('2012-10-16T21:19:08+00:00')
         info.started.should == Time.parse('2012-10-16T21:21:35+00:00')
         info.completed.should == Time.parse('2012-10-16T21:23:40+00:00')

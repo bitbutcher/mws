@@ -4,24 +4,35 @@ module Mws::Apis::Feeds
 
   class ImageListing
 
-    attr_reader :sku, :type, :url
+    Type = Mws::Enum.for(
+      main: 'Main',
+      alt1: 'PT1',
+      alt2: 'PT2',
+      alt3: 'PT3',
+      alt4: 'PT4',
+      alt5: 'PT5'
+    )
 
-    def initialize(sku, url, type='Main')
+    attr_reader :sku, :url
+
+    Mws::Enum.sym_reader self, :type
+
+    def initialize(sku, url, type=nil)
       @sku = sku
       @url = url
-      @type = type
+      @type = Type.for(type) || Type.MAIN
     end
 
     def ==(other)
       return true if equal? other
       return false unless other.class == self.class
-      @sku == other.sku and @url == other.url and @type == other.type
+      sku == other.sku and url == other.url and type == other.type
     end
 
     def to_xml(name='ProductImage', parent=nil)
-      Mws::Serializer.tree name, parent do  |xml| 
+      Mws::Serializer.tree name, parent do | xml | 
         xml.SKU @sku
-        xml.ImageType @type
+        xml.ImageType @type.val
         xml.ImageLocation @url
       end
     end

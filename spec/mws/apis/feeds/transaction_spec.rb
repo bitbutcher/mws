@@ -23,8 +23,8 @@ module Mws::Apis::Feeds
       it 'should be able to create a transaction with no items' do
         transaction = Transaction.new submission_info
         transaction.id.should == "5868304010"
-        transaction.status.should == Mws::Apis::Feeds::SubmissionInfo::Status.SUBMITTED.sym
-        transaction.type.should == Mws::Apis::Feeds::Feed::Type.PRODUCT.sym
+        transaction.status.should == SubmissionInfo::Status.SUBMITTED.sym
+        transaction.type.should == Feed::Type.PRODUCT.sym
         transaction.submitted.should == Time.parse('2012-10-16T21:19:08+00:00')
         transaction.items.should be_empty
       end

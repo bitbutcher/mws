@@ -54,6 +54,15 @@ module  Mws
       it
     end
 
+    def self.sym_reader(target, *attributes)
+      attributes.each do | attribute |
+        target.send(:define_method, attribute) do
+          entry = send(:instance_variable_get, "@#{attribute}")
+          entry && entry.sym
+        end
+      end
+    end
+
   end
 
   class EnumEntry

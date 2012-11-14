@@ -35,7 +35,7 @@ module Mws::Apis::Feeds
       it 'should validate the unit override' do
         expect {
           Temperature.new 40, :ounces
-        }.to raise_error ArgumentError, "Invalid unit of measure 'ounces'"
+        }.to raise_error Mws::Errors::ValidationError, "Invalid unit of measure 'ounces'"
       end
 
     end

@@ -16,9 +16,9 @@ module Mws::Apis::Feeds
       end
 
       it 'should be able to construct a price with custom currency code' do
-        price = PriceListing.new('9876123456', 14.99, currency: 'EUR')
-        price.currency.should == 'EUR'
-        price.base.should == Money.new(14.99, 'EUR')
+        price = PriceListing.new('9876123456', 14.99, currency: :eur)
+        price.currency.should == :eur
+        price.base.should == Money.new(14.99, :eur)
       end
 
       it 'should be able to construct a price with custom minimum advertised price' do
@@ -40,13 +40,13 @@ module Mws::Apis::Feeds
       it 'should validate that the base price is less than the minimum advertised price' do
         expect {
           PriceListing.new('987612345', 9.99, min: 10.00)
-        }.to raise_error ArgumentError, "'Base Price' must be greater than 'Minimum Advertised Price'."
+        }.to raise_error Mws::Errors::ValidationError, "'Base Price' must be greater than 'Minimum Advertised Price'."
       end
 
       it 'should validate that the sale price is less than the minimum advertised price' do
         expect {
           PriceListing.new('987612345', 14.99, min: 10.00).on_sale(9.99, 1.day.ago, 4.months.from_now)
-        }.to raise_error ArgumentError, "'Sale Price' must be greater than 'Minimum Advertised Price'."
+        }.to raise_error Mws::Errors::ValidationError, "'Sale Price' must be greater than 'Minimum Advertised Price'."
       end
 
     end

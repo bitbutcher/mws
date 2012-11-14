@@ -1,11 +1,6 @@
-require 'ostruct'
-require 'nokogiri'
-
 module Mws::Apis::Feeds
 
   class Inventory
-
-    FulfillmentType = Mws::Enum.for afn: 'AFN', mfn: 'MFN'
 
     attr_reader :sku, :available, :quantity, :lookup, :fulfillment, :restock
 
@@ -14,10 +9,10 @@ module Mws::Apis::Feeds
       @available = options[:available]
       @quantity = options[:quantity]
       @lookup = options[:lookup]
-      @fulfillment = OpenStruct.new(
-        center: options[:fulfillment_center],
-        latency: options[:fulfillment_latency],
-        type: options[:fulfillment_type]
+      @fulfillment = Fulfillment.new(
+        options[:fulfillment_center],
+        options[:fulfillment_latency],
+        options[:fulfillment_type]
       )
       @restock = options[:restock]
       validate
@@ -32,8 +27,28 @@ module Mws::Apis::Feeds
         xml.Lookup @lookup unless @lookup.nil?
         xml.RestockDate @restock.iso8601 unless @restock.nil?
         xml.FulfillmentLatency @fulfillment.latency unless @fulfillment.latency.nil?
-        xml.SwitchFulfillmentTo FulfillmentType.for(@fulfillment.type).val unless @fulfillment.type.nil?
+        xml.SwitchFulfillmentTo Fulfillment::Type.for(@fulfillment.type).val unless @fulfillment.type.nil?
       end
+    end
+
+    class Fulfillment
+
+      Type = Mws::Enum.for afn: 'AFN', mfn: 'MFN'
+
+      attr_reader :center, :latency
+
+      Mws::Enum.sym_reader self, :type
+
+      def initialize(center, latency, type)
+        @center = center
+        @latency = latency
+        unless @latency.nil? or (@latency.to_i == @latency and @latency > 0)
+          raise Mws::Errors::ValidationError.new('Fulfillment latency must be a whole number greater than zero.')
+        end
+        @type = Type.for(type)
+        raise Mws::Errors::ValidationError.new("Fulfillment type must be either 'AFN' or 'MFN'.") if type and @type.nil?
+      end
+
     end
 
     private
@@ -52,12 +67,6 @@ module Mws::Apis::Feeds
       unless @lookup.nil? or [ true, false ].include? @lookup
         raise Mws::Errors::ValidationError.new('Lookup must be either true or false.')
       end
-      unless @fulfillment.latency.nil? or (@fulfillment.latency.to_i == @fulfillment.latency and @fulfillment.latency > 0)
-        raise Mws::Errors::ValidationError.new('Fulfillment latency must be a whole number greater than zero.')
-      end
-      if @fulfillment.type and FulfillmentType.for(@fulfillment.type).nil?
-        raise Mws::Errors::ValidationError.new("Fulfillment type must be either 'AFN' or 'MFN'.")
-      end 
       unless @restock.nil? or (@restock.respond_to? :iso8601 and Time.now < @restock)
         raise Mws::Errors::ValidationError.new('Restock date must be in the future.')
       end

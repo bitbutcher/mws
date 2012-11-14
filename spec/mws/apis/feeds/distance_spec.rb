@@ -21,7 +21,7 @@ module Mws::Apis::Feeds
       it 'should validate the unit override' do
         expect {
           Distance.new 40, :acres
-        }.to raise_error ArgumentError, "Invalid unit of measure 'acres'"
+        }.to raise_error Mws::Errors::ValidationError, "Invalid unit of measure 'acres'"
       end
 
     end

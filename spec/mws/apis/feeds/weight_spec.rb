@@ -21,7 +21,7 @@ module Mws::Apis::Feeds
       it 'should validate the unit override' do
         expect {
           Weight.new 50, :cent
-        }.to raise_error ArgumentError, "Invalid unit of measure 'cent'"
+        }.to raise_error Mws::Errors::ValidationError, "Invalid unit of measure 'cent'"
       end
 
     end

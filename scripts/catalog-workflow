@@ -114,7 +114,7 @@ workflow.proceed
     id = terminated_q.shift
     result = mws.feeds.get id
     puts result.inspect
-    if result.message_count == result.message_count(:success)
+    if result.messages_processed == result.count_for(:success)
       workflow.complete result.transaction_id
     end
   end

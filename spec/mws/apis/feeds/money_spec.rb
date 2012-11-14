@@ -21,7 +21,7 @@ module Mws::Apis::Feeds
       it 'should validate the currency override' do
         expect {
           Money.new 40, :acres
-        }.to raise_error ArgumentError, "Invalid currency 'acres'"
+        }.to raise_error Mws::Errors::ValidationError, "Invalid currency 'acres'"
       end
 
     end

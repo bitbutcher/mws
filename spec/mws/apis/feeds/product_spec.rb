@@ -83,10 +83,10 @@ module Mws::Apis::Feeds
         capture = self
         product = Product.new('12324') do
           package_dimensions {
-            capture.expect { length 2, :foots }.to capture.raise_error ArgumentError
-            capture.expect { width 2, :decades }.to capture.raise_error ArgumentError
-            capture.expect { height 1, :miles }.to capture.raise_error ArgumentError
-            capture.expect { weight 1, :stone }.to capture.raise_error ArgumentError
+            capture.expect { length 2, :foots }.to capture.raise_error Mws::Errors::ValidationError
+            capture.expect { width 2, :decades }.to capture.raise_error Mws::Errors::ValidationError
+            capture.expect { height 1, :miles }.to capture.raise_error Mws::Errors::ValidationError
+            capture.expect { weight 1, :stone }.to capture.raise_error Mws::Errors::ValidationError
           }
         end
       end
@@ -151,7 +151,7 @@ module Mws::Apis::Feeds
               }
             }
           end
-        }.to raise_error ArgumentError, 'Product must have a category when details are specified.'
+        }.to raise_error Mws::Errors::ValidationError, 'Product must have a category when details are specified.'
       end
 
     end
