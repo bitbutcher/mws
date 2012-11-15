@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws::Apis::Feeds
 
-  describe 'Weight' do
+  describe Weight do
 
     context '.new' do
 

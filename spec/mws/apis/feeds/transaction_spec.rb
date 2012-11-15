@@ -3,7 +3,7 @@ require 'nokogiri'
 
 module Mws::Apis::Feeds
 
-  describe 'Transaction' do 
+  describe Transaction do 
 
     let(:submission_info) do
       SubmissionInfo.from_xml(

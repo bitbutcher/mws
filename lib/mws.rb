@@ -1,5 +1,5 @@
-autoload :Base64, 'base64'
-autoload :OpenSSL, 'openssl'
+require 'base64'
+require 'openssl'
 
 module Mws
 
@@ -16,16 +16,16 @@ module Mws
   # The current version of this ruby gem
   VERSION = '0.0.1'
 
-  Utils.alias self, Apis::Feeds, 
-    :Distance,
-    :Feed,
-    :ImageListing,
-    :Inventory,
-    :Money,
-    :PriceListing,
-    :Product,
-    :Shipping,
-    :Weight
+  # Utils.alias self, Apis::Feeds, 
+  #   :Distance,
+  #   :Feed,
+  #   :ImageListing,
+  #   :Inventory,
+  #   :Money,
+  #   :PriceListing,
+  #   :Product,
+  #   :Shipping,
+  #   :Weight
 
   def self.connect(options)
     Connection.new options

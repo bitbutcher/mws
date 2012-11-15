@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws::Apis::Feeds
 
-  describe 'Distance' do
+  describe Distance do
 
     context '.new' do
 

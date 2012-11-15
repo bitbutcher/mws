@@ -6,7 +6,7 @@ module Mws
     attr_reader :params
   end
 
-  describe 'Query' do
+  describe Query do
     
     let(:defaults) do
       {

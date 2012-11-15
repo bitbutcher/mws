@@ -16,7 +16,7 @@ module Mws::Apis::Feeds
 
   end
 
-  describe 'Measurement' do
+  describe Measurement do
 
     context '.new' do
 

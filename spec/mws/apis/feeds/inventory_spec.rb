@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws::Apis::Feeds
 
-  describe 'Inventory' do
+  describe Inventory do
     
     context '.new' do
 

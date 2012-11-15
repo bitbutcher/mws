@@ -7,7 +7,7 @@ module Mws::Apis::Feeds
     attr_reader :responses
   end
 
-  describe 'SubmissionResult' do 
+  describe SubmissionResult do 
     let(:success_node) do
       Nokogiri::XML::Builder.new do
         Message {

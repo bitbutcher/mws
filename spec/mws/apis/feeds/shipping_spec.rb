@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws::Apis::Feeds
 
-  describe 'Shipping' do
+  describe Shipping do
 
     context '.new' do
 
@@ -32,7 +32,7 @@ module Mws::Apis::Feeds
         shipping.sku.should == '987612345'
         shipping.options.size.should == 1
         override = shipping.options.first
-        override.amount.should == Mws::Money(4.99, :usd)
+        override.amount.should == Money.new(4.99, :usd)
         # override.option.should == Shipping::Option.new(:continental_us, :standard, :street)
         override.option.region.should == :continental_us
         override.option.speed.should == :standard

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws
 
-  describe 'Enum' do
+  describe Enum do
 
     let (:options) do
       {
@@ -41,6 +41,39 @@ module Mws
 
     end
 
+    context '.sym_reader' do
+
+      class HasEnumAttrs
+
+        EnumOne = Enum.for( foo: 'Foo', bar: 'Bar', baz: 'Baz' )
+
+        EnumTwo = Enum.for( bar: 'BAR', baz: 'BAZ', quk: 'QUK' )
+
+        Enum.sym_reader self, :one, :two
+
+        def initialize(one, two)
+          @one = EnumOne.for(one)
+          @two = EnumTwo.for(two)
+        end
+
+      end
+
+      it 'should synthesize a attr_reader that exposes an enum entry as a symbol' do
+        it = HasEnumAttrs.new(:foo, :quk)
+        it.send(:instance_variable_get, '@one').should == HasEnumAttrs::EnumOne.FOO
+        it.one.should == :foo
+        it.send(:instance_variable_get, '@two').should == HasEnumAttrs::EnumTwo.QUK
+        it.two.should == :quk
+      end
+
+      it 'should synthesize attr_readers that are null safe' do
+        it = HasEnumAttrs.new(:quk, :foo)
+        it.one.should be nil
+        it.two.should be nil
+      end
+
+    end
+
     context '#for' do
 
       it 'should be able to find an enum entry from a symbol' do
@@ -55,6 +88,47 @@ module Mws
         OrderStatus.for(OrderStatus.PENDING).should == OrderStatus.PENDING
       end
       
+    end
+
+    context '#sym' do
+
+      it 'should return nil for nil value' do
+        OrderStatus.sym(nil).should be nil
+      end
+
+      it 'should return nil for an unknown value' do
+        OrderStatus.sym('UnknownValue').should be nil
+      end
+
+      it 'should provide the symbol for a given value' do
+        OrderStatus.sym('Pending').should == :pending
+        OrderStatus.sym('Unshipped').should == :unshipped
+        OrderStatus.sym('PartiallyShipped').should == :unshipped
+        OrderStatus.sym('Shipped').should == :shipped
+        OrderStatus.sym('Cancelled').should == :cancelled
+        OrderStatus.sym('Unfulfillable').should == :unfulfillable
+      end
+
+    end
+
+    context '#val' do
+
+      it 'should return nil for nil symbol' do
+        OrderStatus.val(nil).should be nil
+      end
+
+      it 'should return nil for an unknown sumbol' do
+        OrderStatus.val(:unknown).should be nil
+      end
+
+      it 'should provide the value for a given symbol' do
+        OrderStatus.val(:pending).should == 'Pending'
+        OrderStatus.val(:unshipped).should == [ 'Unshipped', 'PartiallyShipped' ]
+        OrderStatus.val(:shipped).should == 'Shipped'
+        OrderStatus.val(:cancelled).should == 'Cancelled'
+        OrderStatus.val(:unfulfillable).should == 'Unfulfillable'
+      end
+
     end
 
     context '#syms' do

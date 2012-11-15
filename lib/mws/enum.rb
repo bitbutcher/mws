@@ -34,11 +34,13 @@ module  Mws
     end
 
     def sym(str)
-      entry_for(str).sym
+      entry = self.for(str)
+      entry && entry.sym
     end
 
     def val(sym)
-     entry_for(sym).val
+      entry = self.for(sym)
+      entry && entry.val
     end
 
     def self.for(h)

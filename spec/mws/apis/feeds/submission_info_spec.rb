@@ -3,7 +3,7 @@ require 'nokogiri'
 
 module Mws::Apis::Feeds
 
-  describe 'SubmissionInfo' do 
+  describe SubmissionInfo do 
 
     let(:submitted_node) do
       Nokogiri::XML::Builder.new do

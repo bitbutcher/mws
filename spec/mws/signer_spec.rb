@@ -6,7 +6,7 @@ module Mws
     attr_reader :verb, :host, :path, :secret
   end
 
-  describe 'Signer' do
+  describe Signer do
     
     let(:query) { 'AWSAccessKeyId=Q6K3SCWMLYAKIAJXAAYQ&LastUpdatedAfter=2012-10-12T11%3A11%3A54-05%3A00&MarketplaceIdList.Id.1=ATVPDKIKX0DER&MarketplaceIdList.Id.2=KIKX0DERATVPD&SellerId=J4UBGSWCA31UTJ&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2012-10-12T15%3A14%3A52-05%3A00' }
 

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Mws::Apis::Feeds
 
-  describe 'PriceListing' do
+  describe PriceListing do
 
     context '.new' do
 

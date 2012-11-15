@@ -3,7 +3,7 @@ require 'nokogiri'
 
 module Mws::Apis::Feeds
 
-  describe 'Product' do 
+  describe Product do 
 
     context '.new' do
 
