@@ -125,6 +125,33 @@ module Mws::Apis::Feeds
 
     end
 
+    context '#==' do
+
+      it 'should be reflexive' do
+        a = SubmissionResult.from_xml success_node
+        (a == a).should be true
+      end
+
+      it 'should be symmetric' do
+        a = SubmissionResult.from_xml success_node
+        b = SubmissionResult.from_xml success_node
+        (a == b).should == (b == a)
+      end
+
+      it 'should be transitive' do
+        a = SubmissionResult.from_xml success_node
+        b = SubmissionResult.from_xml success_node
+        c = SubmissionResult.from_xml success_node
+        (a == c).should == (a == b && b == c)
+      end
+
+      it 'should handle comparison to nil' do
+        a = SubmissionResult.from_xml success_node
+        (a == nil).should be false
+      end
+
+    end
+
   end
 
 end

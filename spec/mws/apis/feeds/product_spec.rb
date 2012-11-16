@@ -236,6 +236,8 @@ module Mws::Apis::Feeds
                 ProductType {
                   CableOrAdapter {
                     CableLength 6, unitOfMeasure: 'feet'
+                    CableWeight 6, unitOfMeasure: 'OZ'
+                    CostSavings '6.99', currency: 'USD'
                   }
                 }
               }
@@ -248,6 +250,8 @@ module Mws::Apis::Feeds
           details {
             cable_or_adapter {
               cable_length as_distance 6, :feet
+              cable_weight as_weight 6, :ounces
+              cost_savings as_money 6.99, :usd
             }    
           }
         end.to_xml

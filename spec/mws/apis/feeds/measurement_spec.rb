@@ -40,6 +40,33 @@ module Mws::Apis::Feeds
 
     end
 
+    context '#==' do
+
+      it 'should be reflexive' do
+        a = Temperature.new 25, :celcius
+        (a == a).should be true
+      end
+
+      it 'should be symmetric' do
+        a = Temperature.new 25, :celcius
+        b = Temperature.new 25, :celcius
+        (a == b).should == (b == a)
+      end
+
+      it 'should be transitive' do
+        a = Temperature.new 25, :celcius
+        b = Temperature.new 25, :celcius
+        c = Temperature.new 25, :celcius
+        (a == c).should == (a == b && b == c)
+      end
+
+      it 'should handle comparison to nil' do
+        a = Temperature.new 25, :celcius
+        (a == nil).should be false
+      end
+
+    end
+
     context '#to_xml' do
 
       it 'should properly serialize to XML' do

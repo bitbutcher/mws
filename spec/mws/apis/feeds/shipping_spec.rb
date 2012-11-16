@@ -33,7 +33,6 @@ module Mws::Apis::Feeds
         shipping.options.size.should == 1
         override = shipping.options.first
         override.amount.should == Money.new(4.99, :usd)
-        # override.option.should == Shipping::Option.new(:continental_us, :standard, :street)
         override.option.region.should == :continental_us
         override.option.speed.should == :standard
         override.option.variant.should == :street
@@ -41,17 +40,37 @@ module Mws::Apis::Feeds
 
     end
 
-    context '#to_s' do
-
-      it 'should properly encode as a string' do
-        shipping = Shipping.new('987612345') do
-          replace 19.99, :usd, :continental_us, :two_day, :street
-          replace 29.99, :usd, :continental_us, :one_day, :street
-        end
-        shipping.options.first.option.to_s.should == 'Second'
-        shipping.options.last.option.to_s.should == 'Next'
+    context '#to_xml' do
+      shipping = Shipping.new('987612345') do
+        unrestricted :continental_us, :standard
+        restricted :continental_us, :expedited
+        adjust 19.99, :usd, :continental_us, :two_day, :street
+        replace 29.99, :usd, :continental_us, :one_day, :street
       end
-
+      expected = Nokogiri::XML::Builder.new do
+        Override {
+          SKU '987612345'
+          ShippingOverride {
+            ShipOption 'Std Cont US Street Addr'
+            IsShippingRestricted 'false'
+          }
+          ShippingOverride {
+            ShipOption 'Exp Cont US Street Addr'
+            IsShippingRestricted 'true'
+          }
+          ShippingOverride {
+            ShipOption 'Second'
+            Type 'Additive'
+            ShipAmount '19.99', currency: 'USD'
+          }
+          ShippingOverride {
+            ShipOption 'Next'
+            Type 'Exclusive'
+            ShipAmount '29.99', currency: 'USD'
+          }
+        }
+      end.doc.root.to_xml
+      shipping.to_xml.should == expected
     end
 
   end

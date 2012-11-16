@@ -34,8 +34,10 @@ module Mws::Apis::Feeds
       new node
     end 
 
-    def ==(another)
-      @id == another.id
+    def ==(other)
+      return true if equal? other
+      return false unless other.class == self.class
+      id == other.id
     end
 
   end

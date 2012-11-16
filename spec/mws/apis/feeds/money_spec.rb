@@ -9,13 +9,13 @@ module Mws::Apis::Feeds
       it 'should default to usd' do
         money = Money.new 40
         money.amount.should == 40
-        money.unit.should == :usd
+        money.currency.should == :usd
       end
 
       it 'should accept a valid currency override' do
         money = Money.new 0, :eur
         money.amount.should == 0
-        money.unit.should == :eur
+        money.currency.should == :eur
       end
 
       it 'should validate the currency override' do

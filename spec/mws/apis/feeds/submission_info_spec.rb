@@ -45,7 +45,7 @@ module Mws::Apis::Feeds
       expect { SubmissionInfo.new }.to raise_error NoMethodError
     end
 
-    describe '.from_xml' do
+    context '.from_xml' do
 
       it 'should be able to create an info object in a submitted state' do
         info = SubmissionInfo.from_xml submitted_node
@@ -75,6 +75,33 @@ module Mws::Apis::Feeds
         info.submitted.should == Time.parse('2012-10-16T21:19:08+00:00')
         info.started.should == Time.parse('2012-10-16T21:21:35+00:00')
         info.completed.should == Time.parse('2012-10-16T21:23:40+00:00')
+      end
+
+    end
+
+    context '#==' do
+
+      it 'should be reflexive' do
+        a = SubmissionInfo.from_xml submitted_node
+        (a == a).should be true
+      end
+
+      it 'should be symmetric' do
+        a = SubmissionInfo.from_xml submitted_node
+        b = SubmissionInfo.from_xml submitted_node
+        (a == b).should == (b == a)
+      end
+
+      it 'should be transitive' do
+        a = SubmissionInfo.from_xml submitted_node
+        b = SubmissionInfo.from_xml submitted_node
+        c = SubmissionInfo.from_xml submitted_node
+        (a == c).should == (a == b && b == c)
+      end
+
+      it 'should handle comparison to nil' do
+        a = SubmissionInfo.from_xml submitted_node
+        (a == nil).should be false
       end
 
     end

@@ -36,8 +36,10 @@ module Mws::Apis::Feeds
       new node
     end
 
-    def ==(another)
-      @transaction_id == another.transaction_id
+    def ==(other)
+      return true if equal? other
+      return false unless other.class == self.class
+      transaction_id == other.transaction_id
     end
 
     def count_for(type)
