@@ -13,8 +13,11 @@ module Mws
       @scheme = overrides[:scheme] || 'https'
       @host = overrides[:host] || 'mws.amazonservices.com'
       @merchant = overrides[:merchant]
+      raise Mws::Errors::ValidationError, 'A merchant identifier must be specified.' if @merchant.nil?
       @access = overrides[:access]
+      raise Mws::Errors::ValidationError, 'An access key must be specified.' if @access.nil?
       @secret = overrides[:secret]
+      raise Mws::Errors::ValidationError, 'A secret key must be specified.' if @secret.nil?
       @orders = Apis::Orders.new self
       @feeds = Apis::Feeds::Api.new self, merchant: @merchant
     end
@@ -30,8 +33,6 @@ module Mws
     private
 
     def request(method, path, params, body, overrides)
-      puts "------------------------BODY----------------------------"
-      puts body
       query = Query.new({
         action: overrides[:action],
         version: overrides[:version],
@@ -63,8 +64,6 @@ module Mws
     def parse(body, overrides)
       doc = Nokogiri::XML(body)
       doc.remove_namespaces!
-      puts doc.to_xml
-      puts "------------------------======----------------------------"
       doc.xpath('/ErrorResponse/Error').each do | error |
         options = {}
         error.element_children.each { |node| options[node.name.downcase.to_sym] = node.text }
