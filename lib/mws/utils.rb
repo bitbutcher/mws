@@ -11,12 +11,19 @@ module Mws::Utils
   #
   # @return [String] The camelized name corresponding to the provided underscored name.
   def camelize(name, uc_first=true)
-    parts = name.to_s.split '_'
+    return nil if name.nil?
+    name = name.to_s.strip
+    return name if name.empty?
+    parts = name.split '_'
     assemble = lambda { |head, tail| head + tail.capitalize }
-    uc_first ? parts.inject('', &assemble) : parts.inject(&assemble)
+    parts[0] = uc_first ? parts[0].capitalize : parts[0].downcase
+    parts.inject(&assemble)
   end
 
   def underscore(name)
+    return nil if name.nil?
+    name = name.to_s.strip
+    return name if name.empty?
     name.gsub(/::/, '/')
       .gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
       .gsub(/([a-z\d])([A-Z])/,'\1_\2')
@@ -28,12 +35,6 @@ module Mws::Utils
     value.gsub /([^a-zA-Z0-9_.~-]+)/ do
       '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
     end
-  end
-
-  def require(options, name)
-    value = options[name]
-    raise "Parameter #{name} is required!" if value.nil?
-    value
   end
 
   def alias(to, from, *constants)

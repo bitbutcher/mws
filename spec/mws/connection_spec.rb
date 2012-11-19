@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'nokogiri'
 
 module Mws
 
@@ -173,6 +174,155 @@ module Mws
     end
 
     context '#parse' do
+      
+      it 'should parse error messages correctly' do
+        body = <<-XML
+        <?xml version="1.0"?>
+        <ErrorResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+          <Error>
+            <Type>Sender</Type>
+            <Code>InvalidParameterValue</Code>
+            <Message>CreatedAfter or LastUpdatedAfter must be specified</Message>
+          </Error>
+          <RequestId>fb03503e-97e3-4ed1-88e9-d93f4d2111c1</RequestId>
+        </ErrorResponse>
+        XML
+        expect { connection.parse(body, {}) }.to raise_error do | error | 
+          error.should be_a Errors::ServerError
+          error.type.should == 'Sender'
+          error.code.should == 'InvalidParameterValue'
+          error.message.should == 'CreatedAfter or LastUpdatedAfter must be specified'
+          error.details.should == 'None'
+        end
+      end
+
+      it 'should parse result based on custom action' do
+        body = <<-XML
+        <?xml version="1.0"?>
+        <ListOrdersResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+          <ListOrdersResult>
+            <Orders/>
+            <CreatedBefore>2012-11-19T20:54:33Z</CreatedBefore>
+          </ListOrdersResult>
+          <ResponseMetadata>
+            <RequestId>931137cb-add7-4232-ac08-b701435c8447</RequestId>
+          </ResponseMetadata>
+        </ListOrdersResponse>
+        XML
+        result = connection.parse(body, action: 'ListOrders').name.should == 'ListOrdersResult'
+      end
+
+      it 'shoudl parse result base on custom xpath' do
+        body = <<-XML
+        <?xml version="1.0"?>
+        <ListOrdersResponse xmlns="https://mws.amazonservices.com/Orders/2011-01-01">
+          <ListOrdersResult>
+            <Orders/>
+            <CreatedBefore>2012-11-19T20:54:33Z</CreatedBefore>
+          </ListOrdersResult>
+          <ResponseMetadata>
+            <RequestId>931137cb-add7-4232-ac08-b701435c8447</RequestId>
+          </ResponseMetadata>
+        </ListOrdersResponse>
+        XML
+        result = connection.parse(body, xpath: '/ListOrdersResponse/ListOrdersResult').name.should == 'ListOrdersResult'
+      end
+
+    end
+
+    context '#response_for' do
+
+      it 'should properly handle a secure get request' do
+        response = double(:response)
+        response.should_receive(:body).twice.and_return('response_body')
+        http = double(:http)
+        http.should_receive(:request) do | req |
+          req.should be_a Net::HTTP::Get
+          req.method.should == 'GET'
+          req.path.should == '/?foo=bar'
+          req['User-Agent'].should == 'MWS Connect/0.0.1 (Language=Ruby)'
+          req['Accept-Encoding'].should == 'text/xml'
+          response
+        end
+        Net::HTTP.should_receive(:start).with('mws.amazonservices.com', 443, use_ssl: true).and_yield(http)
+        connection.response_for(:get, '/', 'foo=bar', nil).should == 'response_body'
+      end
+
+      it 'should properly handle an insecure get request' do
+        connection = Connection.new(defaults.merge(scheme: 'http'))
+        response = double(:response)
+        response.should_receive(:body).twice.and_return('response_body')
+        http = double(:http)
+        http.should_receive(:request) do | req |
+          req.should be_a Net::HTTP::Get
+          req.method.should == 'GET'
+          req.path.should == '/?foo=bar'
+          req['User-Agent'].should == 'MWS Connect/0.0.1 (Language=Ruby)'
+          req['Accept-Encoding'].should == 'text/xml'
+          response
+        end
+        Net::HTTP.should_receive(:start).with('mws.amazonservices.com', 80, use_ssl: false).and_yield(http)
+        connection.response_for(:get, '/', 'foo=bar', nil).should == 'response_body'
+      end
+
+      it 'should properly handle requests with transport level errors' do
+        response = double(:response)
+        response.should_receive(:body).and_return(nil)
+        response.should_receive(:code).and_return(500)
+        response.should_receive(:msg).and_return('Internal Server Error')
+        http = double(:http)
+        http.should_receive(:request) do | req |
+          req.should be_a Net::HTTP::Get
+          req.method.should == 'GET'
+          req.path.should == '/?foo=bar'
+          req['User-Agent'].should == 'MWS Connect/0.0.1 (Language=Ruby)'
+          req['Accept-Encoding'].should == 'text/xml'
+          response
+        end
+        Net::HTTP.should_receive(:start).with('mws.amazonservices.com', 443, use_ssl: true).and_yield(http)
+        expect { connection.response_for(:get, '/', 'foo=bar', nil) }.to raise_error do | error |
+          error.should be_a Errors::ServerError
+          error.type.should == 'Server'
+          error.code.should == 500
+          error.message.should == 'Internal Server Error'
+          error.detail.should == 'None'
+        end
+      end
+
+      it 'should properly handle a post without a body' do
+        response = double(:response)
+        response.should_receive(:body).twice.and_return('response_body')
+        http = double(:http)
+        http.should_receive(:request) do | req |
+          req.should be_a Net::HTTP::Post
+          req.method.should == 'POST'
+          req.path.should == '/?foo=bar'
+          req['User-Agent'].should == 'MWS Connect/0.0.1 (Language=Ruby)'
+          req['Accept-Encoding'].should == 'text/xml'
+          response
+        end
+        Net::HTTP.should_receive(:start).with('mws.amazonservices.com', 443, use_ssl: true).and_yield(http)
+        connection.response_for(:post, '/', 'foo=bar', nil).should == 'response_body'
+      end
+
+      it 'should properly handle a post with a body' do
+        response = double(:response)
+        response.should_receive(:body).twice.and_return('response_body')
+        http = double(:http)
+        http.should_receive(:request) do | req |
+          req.should be_a Net::HTTP::Post
+          req.method.should == 'POST'
+          req.path.should == '/?foo=bar'
+          req.content_type.should == 'text/xml'
+          req.body.should == 'request_body'
+          req['Content-MD5'] = Digest::MD5.base64digest('request_body').strip
+          req['User-Agent'].should == 'MWS Connect/0.0.1 (Language=Ruby)'
+          req['Accept-Encoding'].should == 'text/xml'
+          response
+        end
+        Net::HTTP.should_receive(:start).with('mws.amazonservices.com', 443, use_ssl: true).and_yield(http)
+        connection.response_for(:post, '/', 'foo=bar', 'request_body').should == 'response_body'
+      end
 
     end
 

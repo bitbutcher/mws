@@ -70,7 +70,6 @@ module Mws
         raise Errors::ServerError.new(options)
       end
       result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
-      puts result
       result
     end
 
