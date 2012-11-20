@@ -27,11 +27,15 @@ module Mws
     end
 
     def initialize(exceptions={})
-      @exceptions = exceptions
+      @xml_exceptions = exceptions
+      @hash_exceptions = {}
+      exceptions.each do | key, value |
+        @hash_exceptions[value.to_sym] = key
+      end
     end
 
     def xml_for(name, data, builder, context=nil)
-      element = @exceptions[name.to_sym] || Mws::Utils.camelize(name)
+      element = @xml_exceptions[name.to_sym] || Utils.camelize(name)
       path = path_for name, context
       if data.respond_to? :keys
         builder.send(element) do | b |
@@ -53,11 +57,9 @@ module Mws
       return node.text unless elements.size > 0
       res = {}
       elements.each do | element |
-        name = Mws::Utils.underscore(element.name).to_sym
-        path = path_for name, context
-        exception = @exceptions[path]
-        delegate = (exception and exception.include?(:from)) ? exception[:from] : method(:hash_for)
-        content = instance_exec element, path, &delegate
+        name = @hash_exceptions[element.name.to_sym] || Utils.underscore(element.name).to_sym
+        path = path_for name, context 
+        content = instance_exec element, path, &method(:hash_for)
         if res.include? name
           res[name] = [ res[name] ] unless res[name].instance_of? Array
           res[name] << content

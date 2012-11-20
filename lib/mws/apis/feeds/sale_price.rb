@@ -20,8 +20,8 @@ module Mws::Apis::Feeds
 
     def to_xml(name='Sale', parent=nil)
       Mws::Serializer.tree name, parent do |xml|
-        xml.send 'StartDate', @from.iso8601
-        xml.send 'EndDate', @to.iso8601
+        xml.StartDate @from.iso8601
+        xml.EndDate @to.iso8601
         price.to_xml 'SalePrice', xml
       end
     end

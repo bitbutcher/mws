@@ -3,7 +3,8 @@
     {
       "path": ".",
       "folder_exclude_patterns": [
-        "pkg"
+        "pkg",
+        "coverage"
       ],
       "file_exclude_patterns": [
         "*.sublime-project*",
