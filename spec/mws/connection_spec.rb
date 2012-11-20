@@ -19,7 +19,7 @@ module Mws
     }
 
     let(:connection) {
-      Connection.new(defaults)
+      Mws.connect(defaults)
     }
 
     context '.new' do
