@@ -26,7 +26,7 @@ module Mws::Apis::Feeds
 
     def submit(body, params)
       params[:feed_type] = Feed::Type.for(params[:feed_type]).val
-      doc = @connection.post('/', params, body, @defaults.merge( action: 'SubmitFeed'))
+      doc = @connection.post('/', params, body, @defaults.merge(action: 'SubmitFeed'))
       SubmissionInfo.from_xml doc.xpath('FeedSubmissionInfo').first
     end
 
@@ -75,20 +75,17 @@ module Mws::Apis::Feeds
     end
 
     def submit(resources, def_operation_type=nil, purge_and_replace=false)
-      root = @message_type.val
       messages = []
-      feed = Feed.new merchant: @merchant, message_type: @message_type do
+      feed = Feed.new @merchant, @message_type do
         resources.each do | resource |
           operation_type = def_operation_type
           if resource.respond_to?(:operation_type) and resource.operation_type
             operation_type = resource.operation_type
           end 
-          messages << message(resource.sku, operation_type) do | builder |
-            resource.to_xml root, builder
-          end
+          messages << message(resource, operation_type)
         end
       end
-      Transaction.new @feeds.submit(feed.xml_for, feed_type: @feed_type, purge_and_replace: purge_and_replace) do 
+      Transaction.new @feeds.submit(feed.to_xml, feed_type: @feed_type, purge_and_replace: purge_and_replace) do 
         messages.each_with_index do | message, index |
           resource = resources[index]
           item message.id, message.sku, message.operation_type, resource.respond_to?(:type) ? resource.type : nil
