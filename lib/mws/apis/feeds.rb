@@ -1,5 +1,3 @@
-require 'hashie'
-
 module Mws::Apis::Feeds
 
   autoload :Api, 'mws/apis/feeds/api'

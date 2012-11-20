@@ -21,5 +21,4 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'cucumber'
   gem.add_development_dependency 'activesupport'
   gem.add_dependency 'nokogiri'
-  gem.add_dependency 'hashie'
 end
