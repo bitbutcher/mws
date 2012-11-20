@@ -1,4 +1,4 @@
-require 'nokogiri'
+require 'open-uri'
 
 module Mws::Apis::Feeds
 
@@ -18,7 +18,9 @@ module Mws::Apis::Feeds
     Mws::Enum.sym_reader self, :type
 
     def initialize(sku, url, type=nil)
+      raise Mws::Errors::ValidationError, 'SKU is required.' if sku.nil? or sku.strip.empty?
       @sku = sku
+      raise Mws::Errors::ValidationError, 'URL must be an unsecured http address.' unless url =~ URI::regexp('http')
       @url = url
       @type = Type.for(type) || Type.MAIN
     end
