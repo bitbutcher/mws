@@ -2,9 +2,10 @@ module Mws::Apis::Feeds
 
   class Api
 
-    attr_reader :products, :images, :prices, :inventory, :shipping
+    attr_reader :products, :images, :prices, :shipping, :inventory
 
     def initialize(connection, defaults={})
+      raise Mws::Errors::ValidationError, 'A connection is required.' if connection.nil?
       @connection = connection
       defaults[:version] ||= '2009-01-01'
       @defaults = defaults
@@ -17,16 +18,16 @@ module Mws::Apis::Feeds
     end
 
     def get(id)
-      node = @connection.get('/', { feed_submission_id: id }, @defaults.merge(
+      node = @connection.get '/', { feed_submission_id: id }, @defaults.merge(
         action: 'GetFeedSubmissionResult',
         xpath: 'AmazonEnvelope/Message'
-      ))
+      )
       SubmissionResult.from_xml node
     end
 
     def submit(body, params)
       params[:feed_type] = Feed::Type.for(params[:feed_type]).val
-      doc = @connection.post('/', params, body, @defaults.merge(action: 'SubmitFeed'))
+      doc = @connection.post '/', params, body, @defaults.merge(action: 'SubmitFeed')
       SubmissionInfo.from_xml doc.xpath('FeedSubmissionInfo').first
     end
 
