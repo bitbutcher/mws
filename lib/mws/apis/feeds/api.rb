@@ -9,11 +9,11 @@ module Mws::Apis::Feeds
       defaults[:version] ||= '2009-01-01'
       @defaults = defaults
       
-      @products = TargetedApi.new self, @connection.merchant, :product
-      @images = TargetedApi.new self, @connection.merchant, :image
-      @prices = TargetedApi.new self, @connection.merchant, :price
-      @shipping = TargetedApi.new self, @connection.merchant, :override
-      @inventory = TargetedApi.new self, @connection.merchant, :inventory
+      @products = self.for :product
+      @images = self.for :image
+      @prices = self.for :price
+      @shipping = self.for :override
+      @inventory = self.for :inventory
     end
 
     def get(id)
@@ -46,6 +46,10 @@ module Mws::Apis::Feeds
       @connection.get('/', {}, @defaults.merge(action: 'GetFeedSubmissionCount')).xpath('Count').first.text.to_i
     end
 
+    def for(type)
+      TargetedApi.new self, @connection.merchant, type
+    end
+    
   end
 
   class TargetedApi
