@@ -86,9 +86,9 @@ module Mws::Apis::Feeds
         end
       end
       Transaction.new @feeds.submit(feed.to_xml, feed_type: @feed_type, purge_and_replace: purge_and_replace) do 
-        messages.each_with_index do | message, index |
-          resource = resources[index]
-          item message.id, message.sku, message.operation_type, resource.respond_to?(:type) ? resource.type : nil
+        messages.each do | message |
+          item message.id, message.resource.sku, message.operation_type, 
+            message.resource.respond_to?(:type) ? message.resource.type : nil
         end
       end
     end

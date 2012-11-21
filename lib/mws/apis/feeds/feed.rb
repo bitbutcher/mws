@@ -29,33 +29,33 @@ module Mws::Apis::Feeds
       raise Mws::Errors::ValidationError, 'A valid message type is required.' if @message_type.nil?
       @purge_and_replace = purge_and_replace
       @messages = []
-      ProductBuilder.new(@messages).instance_eval &block if block_given?
+      Builder.new(self, @messages).instance_eval &block if block_given?
     end
 
     def messages
-      messages.dup
+      @messages.dup
     end
 
     def to_xml
-      Nokogiri::XML::Builder.new {
-        AmazonEnvelope('xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'xsi:noNamespaceSchemaLocation' => 'amznenvelope.xsd') {
-          Header {
-            DocumentVersion '1.01'
-            MerchantIdentifier @merchant
+      Nokogiri::XML::Builder.new do | xml |
+        xml.AmazonEnvelope('xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance', 'xsi:noNamespaceSchemaLocation' => 'amznenvelope.xsd') {
+          xml.Header {
+            xml.DocumentVersion '1.01'
+            xml.MerchantIdentifier @merchant
           }
-          MessageType @message_type.val
-          PurgeAndReplace @purge_and_replace
+          xml.MessageType @message_type.val
+          xml.PurgeAndReplace @purge_and_replace
           @messages.each do | message |
-            message.to_xml self
+            message.to_xml xml
           end
         }
-      }.to_xml
+      end.to_xml
     end
 
     class Builder
 
       def initialize(feed, messages)
-        @feed
+        @feed = feed
         @messages = messages
       end
 
@@ -97,7 +97,7 @@ module Mws::Apis::Feeds
         @id = id
         @type = Type.for(type)
         @resource = resource
-        @operation_type = OperationType.for(operation_type)
+        @operation_type = OperationType.for(operation_type) || OperationType.UPDATE
       end
 
       def to_xml(parent)
