@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'mws'
 
 Gem::Specification.new do |gem|
-  gem.name          = "mws"
+  gem.name          = 'mws-connect'
   gem.version       = Mws::VERSION
   gem.authors       = ['Sean M. Duncan', 'John E. Bailey']
   gem.email         = ['info@devmode.com']
