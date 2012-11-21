@@ -234,7 +234,7 @@ module Mws
 
       it 'should properly handle a secure get request' do
         response = double(:response)
-        response.should_receive(:body).twice.and_return('response_body')
+        response.should_receive(:body).exactly(3).times.and_return('response_body')
         http = double(:http)
         http.should_receive(:request) do | req |
           req.should be_a Net::HTTP::Get
@@ -251,7 +251,7 @@ module Mws
       it 'should properly handle an insecure get request' do
         connection = Connection.new(defaults.merge(scheme: 'http'))
         response = double(:response)
-        response.should_receive(:body).twice.and_return('response_body')
+        response.should_receive(:body).exactly(3).times.and_return('response_body')
         http = double(:http)
         http.should_receive(:request) do | req |
           req.should be_a Net::HTTP::Get
@@ -291,7 +291,7 @@ module Mws
 
       it 'should properly handle a post without a body' do
         response = double(:response)
-        response.should_receive(:body).twice.and_return('response_body')
+        response.should_receive(:body).exactly(3).times.and_return('response_body')
         http = double(:http)
         http.should_receive(:request) do | req |
           req.should be_a Net::HTTP::Post
@@ -307,7 +307,7 @@ module Mws
 
       it 'should properly handle a post with a body' do
         response = double(:response)
-        response.should_receive(:body).twice.and_return('response_body')
+        response.should_receive(:body).exactly(3).times.and_return('response_body')
         http = double(:http)
         http.should_receive(:request) do | req |
           req.should be_a Net::HTTP::Post

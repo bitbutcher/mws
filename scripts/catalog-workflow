@@ -6,7 +6,11 @@ if ARGV.size < 3
 end
 
 require 'mws'
+require 'logging'
 require 'active_support/core_ext'
+
+Logging.logger.root.appenders = Logging.appenders.stdout
+Logging.logger.root.level = :debug
 
 mws = Mws.connect(
   merchant: ARGV[0], 

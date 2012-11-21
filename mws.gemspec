@@ -20,5 +20,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'cucumber'
   gem.add_development_dependency 'activesupport'
+  gem.add_dependency 'logging'
   gem.add_dependency 'nokogiri'
 end

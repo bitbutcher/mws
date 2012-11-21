@@ -2,18 +2,18 @@ module Mws::Apis::Feeds
 
   class Api
 
-    attr_accessor :products, :images, :prices, :inventory, :shipping
+    attr_reader :products, :images, :prices, :inventory, :shipping
 
     def initialize(connection, defaults={})
       @connection = connection
       defaults[:version] ||= '2009-01-01'
       @defaults = defaults
       
-      @products = TargetedApi.new self, defaults[:merchant], :product
-      @images = TargetedApi.new self, defaults[:merchant], :image
-      @prices = TargetedApi.new self, defaults[:merchant], :price
-      @shipping = TargetedApi.new self, defaults[:merchant], :override
-      @inventory = TargetedApi.new self, defaults[:merchant], :inventory
+      @products = TargetedApi.new self, @connection.merchant, :product
+      @images = TargetedApi.new self, @connection.merchant, :image
+      @prices = TargetedApi.new self, @connection.merchant, :price
+      @shipping = TargetedApi.new self, @connection.merchant, :override
+      @inventory = TargetedApi.new self, @connection.merchant, :inventory
     end
 
     def get(id)
