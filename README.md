@@ -6,7 +6,7 @@ The goal of this gem is to facilities interactions with the Amazon Marketplace W
 
 Add this line to your application's Gemfile:
 
-    gem 'mws'
+    gem 'mws-connect'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install mws
+    $ gem install mws-connect
 
 ## Usage
 
