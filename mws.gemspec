@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.name          = 'mws-connect'
   gem.version       = Mws::VERSION
   gem.authors       = ['Sean M. Duncan', 'John E. Bailey']
+  gem.license       = 'MIT'
   gem.email         = ['info@devmode.com']
   gem.description   = %q{The missing ruby client library for Amazon MWS}
   gem.summary       = %q{The missing ruby client library for Amazon MWS}

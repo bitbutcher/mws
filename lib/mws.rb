@@ -14,7 +14,7 @@ module Mws
   autoload :Utils, 'mws/utils'
 
   # The current version of this ruby gem
-  VERSION = '0.0.1'
+  VERSION = '0.0.2'
 
   Utils.alias self, Apis::Feeds, 
     :Distance,
