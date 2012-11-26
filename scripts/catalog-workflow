@@ -5,7 +5,7 @@ if ARGV.size < 3
   exit 1
 end
 
-require 'mws'
+require 'mws-connect'
 require 'logging'
 require 'active_support/core_ext'
 
