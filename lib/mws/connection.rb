@@ -8,7 +8,7 @@ module Mws
 
   class Connection
 
-    attr_reader :merchant, :orders, :feeds
+    attr_reader :merchant, :orders, :feeds, :reports
 
     def initialize(overrides)
       @log = Logging.logger[self]
@@ -22,6 +22,7 @@ module Mws
       raise Mws::Errors::ValidationError, 'A secret key must be specified.' if @secret.nil?
       @orders = Apis::Orders.new self
       @feeds = Apis::Feeds::Api.new self
+      @reports = Apis::Reports.new self
     end
 
     def get(path, params, overrides)
@@ -36,14 +37,21 @@ module Mws
 
     def request(method, path, params, body, overrides)
       query = Query.new({
-        action: overrides[:action],
-        version: overrides[:version],
-        merchant: @merchant,
-        access: @access,
-        list_pattern: overrides.delete(:list_pattern)
-      }.merge(params))
+                            action: overrides[:action],
+                            version: overrides[:version],
+                            merchant: @merchant,
+                            access: @access,
+                            list_pattern: overrides.delete(:list_pattern)
+                        }.merge(params))
+
+      puts "QUERY method => #{method}"
+      puts "QUERY path => #{path}"
+      puts "QUERY => #{query.inspect}"
+
       signer = Signer.new method: method, host: @host, path: path, secret: @secret
-      parse response_for(method, path, signer.sign(query), body), overrides
+      response = response_for(method, path, signer.sign(query), body)
+
+      parse(response, overrides) || response
     end
 
     def response_for(method, path, query, body)
@@ -59,7 +67,7 @@ module Mws
         @log.debug "Hash:\n#{req['Content-MD5']}\n"
         req.body = body
       end
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do | http |
+      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request req
       end
       raise Errors::ServerError.new(code: res.code, message: res.msg) if res.body.nil?
@@ -70,12 +78,12 @@ module Mws
     def parse(body, overrides)
       doc = Nokogiri::XML(body)
       doc.remove_namespaces!
-      doc.xpath('/ErrorResponse/Error').each do | error |
+      doc.xpath('/ErrorResponse/Error').each do |error|
         options = {}
         error.element_children.each { |node| options[node.name.downcase.to_sym] = node.text }
         raise Errors::ServerError.new(options)
       end
-      result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides ).first
+      result = doc.xpath((overrides[:xpath] || '/%{action}Response/%{action}Result') % overrides).first
       result
     end
 
