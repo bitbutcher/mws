@@ -13,18 +13,21 @@ class Mws::Apis::Reports
   end
 
   # Reports / GetReport Action, required parameter: report_id
-  # Get and parse a generated _GET_FLAT_FILE_OPEN_LISTINGS_DATA_ report result
+  # Get and parse a formerly generated _GET_FLAT_FILE_OPEN_LISTINGS_DATA_ report result
   def get(params={})
     options = @option_defaults.merge action: 'GetReport'
-    doc = @connection.get "/", params, options
+    lines = @connection.get "/", params, options
+    parsed_report = parse_report(lines)
+    convert_to_hash(parsed_report)
+  end
 
-    doc.gsub! /\r\n?/, "\n"
-    begin
-      parsed_report = doc.split("\n").map { |line| CSV.parse_line(line, col_sep: "\t") }
-    rescue CSV::MalformedCSVError
-      puts "failed to parse report line"
-    end
+  def parse_report(lines)
+    lines.gsub! /\r\n?/, "\n"
+    parsed_report = lines.split("\n").map { |line| CSV.parse_line(line, col_sep: "\t") }
+    parsed_report
+  end
 
+  def convert_to_hash(parsed_report)
     header = parsed_report.shift
     parsed_report.map { |item| Hash[header.zip(item)] }
   end
