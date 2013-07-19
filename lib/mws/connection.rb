@@ -8,7 +8,7 @@ module Mws
 
   class Connection
 
-    attr_reader :merchant, :orders, :feeds
+    attr_reader :merchant, :orders, :feeds, :reports
 
     def initialize(overrides)
       @log = Logging.logger[self]
@@ -22,6 +22,7 @@ module Mws
       raise Mws::Errors::ValidationError, 'A secret key must be specified.' if @secret.nil?
       @orders = Apis::Orders.new self
       @feeds = Apis::Feeds::Api.new self
+      @reports = Apis::Reports.new self
     end
 
     def get(path, params, overrides)
@@ -43,7 +44,8 @@ module Mws
         list_pattern: overrides.delete(:list_pattern)
       }.merge(params))
       signer = Signer.new method: method, host: @host, path: path, secret: @secret
-      parse response_for(method, path, signer.sign(query), body), overrides
+      response = response_for(method, path, signer.sign(query), body)
+      parse(response, overrides) || response
     end
 
     def response_for(method, path, query, body)
