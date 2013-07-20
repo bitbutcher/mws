@@ -38,6 +38,12 @@ class Mws::Apis::Reports
     convert_to_hash(parsed_report)
   end
 
+  def get_report_count(params={})
+    options = @option_defaults.merge action: 'GetReportCount'
+    doc = @connection.get "/", params, options
+    count = doc.xpath("/GetReportCountResponse/GetReportCountResult/Count[1]").text
+  end
+
   private
 
   def parse_report(lines)
