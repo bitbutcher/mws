@@ -13,7 +13,7 @@ class Mws::Query
     options[:seller_id] ||= options.delete(:merchant) || options.delete(:seller)
     options[:marketplace_id] ||= options.delete(:markets) || []
     list_pattern = options.delete(:list_pattern) || '%{key}List.%{ext}.%<index>d'
-    
+
     @params = Hash[options.inject({}) do | params, entry |
       key = normalize_key entry.first
       if entry.last.respond_to? :each_with_index
@@ -35,7 +35,7 @@ class Mws::Query
   private
 
   def normalize_key(key)
-    Mws::Utils.camelize(key).sub /^Aws/, 'AWS'
+    Mws::Utils.camelize(key).sub(/^Aws/, 'AWS').sub(".id.", ".Id.")
   end
 
   def normalize_val(value)

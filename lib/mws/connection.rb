@@ -44,6 +44,7 @@ module Mws
                             list_pattern: overrides.delete(:list_pattern)
                         }.merge(params))
 
+      puts "QUERY params => #{params.inspect}"
       puts "QUERY method => #{method}"
       puts "QUERY path => #{path}"
       puts "QUERY => #{query.inspect}"

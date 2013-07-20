@@ -12,20 +12,41 @@ class Mws::Apis::Reports
     }
   end
 
-  def get(params={})
-    #params[:markets] ||= [ params.delete(:markets) || params.delete(:market) || @param_defaults[:market] ].flatten.compact
-    options = @option_defaults.merge action: 'GetReport'
+  def request_report(params={})
+    options = @option_defaults.merge action: 'RequestReport'
+    params.merge! report_type: "_GET_FLAT_FILE_OPEN_LISTINGS_DATA_"
+    doc = @connection.get("/", params, options)
+    report_request_id = doc.xpath("/RequestReportResponse/RequestReportResult/ReportRequestInfo[1]/ReportRequestId").text
+  end
 
+  def get_report_request(report_request_id, params={})
+    options = @option_defaults.merge action: 'GetReportRequestList'
+    params.merge! :"report_request_id_list.id.1" => report_request_id
     doc = @connection.get "/", params, options
+    request_info = doc.xpath("/GetReportRequestListResponse/GetReportRequestListResult/ReportRequestInfo[1]").first
+    status = request_info.xpath("ReportProcessingStatus").text
+    report_id = request_info.xpath("GeneratedReportId").text
+    (status == "_DONE_ ") ? report_id : nil
+  end
 
-    doc.gsub! /\r\n?/, "\n"
+  # Reports / GetReport Action, required parameter: report_id
+  # Get and parse a formerly generated _GET_FLAT_FILE_OPEN_LISTINGS_DATA_ report result
+  def get_report(params={})
+    options = @option_defaults.merge action: 'GetReport'
+    lines = @connection.get "/", params, options
+    parsed_report = parse_report(lines)
+    convert_to_hash(parsed_report)
+  end
 
-    begin
-      parsed_report = doc.split("\n").map { |line| CSV.parse_line(line, col_sep: "\t") }
-    rescue CSV::MalformedCSVError
-      puts "failed to parse report line"
-    end
+  private
 
+  def parse_report(lines)
+    lines.gsub! /\r\n?/, " \ n "
+    parsed_report = lines.split(" \ n ").map { |line| CSV.parse_line(line, col_sep: " \ t ") }
+    parsed_report
+  end
+
+  def convert_to_hash(parsed_report)
     header = parsed_report.shift
     parsed_report.map { |item| Hash[header.zip(item)] }
   end
