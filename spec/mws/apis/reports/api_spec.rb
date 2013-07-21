@@ -43,7 +43,6 @@ module Mws::Apis::Reports
 </GetReportRequestListResponse>"
 END
       connection.should_receive(:response_for).and_return { response_xml_body }
-      #connection.should_receive(:get).with("/", {:"report_request_id_list.id.1" => "7580976354"}, {:version => "2009-01-01", :action => "GetReportRequestList"})
       reports_api.get_report_request("7580976354").should eq "11743408783"
     end
 
@@ -71,12 +70,10 @@ END
 </GetReportRequestListResponse>
 END
       connection.should_receive(:response_for).and_return { response_xml_body }
-      #connection.should_receive(:get).with("/", {:"report_request_id_list.id.1" => "7580976354"}, {:version => "2009-01-01", :action => "GetReportRequestList"}).and_return Nokogiri::XML(xml)
       reports_api.get_report_request("7589329190").should be nil
     end
 
-
-    it "should return report count" do
+    it "should return reports count" do
       response_xml_body = <<END
 <?xml version="1.0"?>
 <GetReportCountResponse xmlns="http://mws.amazonaws.com/doc/2009-01-01/">
@@ -89,7 +86,6 @@ END
 </GetReportCountResponse>
 END
       connection.should_receive(:response_for).and_return { response_xml_body }
-      #connection.should_receive(:get).with("/", {:"report_request_id_list.id.1" => "7580976354"}, {:version => "2009-01-01", :action => "GetReportRequestList"}).and_return Nokogiri::XML(xml)
       reports_api.get_report_count.should be 7
     end
 

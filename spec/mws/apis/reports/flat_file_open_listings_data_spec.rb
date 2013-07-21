@@ -37,7 +37,6 @@ module Mws::Apis::Reports
 </RequestReportResponse>
 END
       connection.should_receive(:response_for).and_return { response_xml_body }
-      #connection.should_receive(:get).with("/", {:"report_request_id_list.id.1" => "7580976354"}, {:version => "2009-01-01", :action => "GetReportRequestList"}).and_return Nokogiri::XML(xml)
       reports_flat_file_open_listings_data_api.request.should eq "7589269186"
     end
 
