@@ -22,7 +22,7 @@ module Mws
       raise Mws::Errors::ValidationError, 'A secret key must be specified.' if @secret.nil?
       @orders = Apis::Orders.new self
       @feeds = Apis::Feeds::Api.new self
-      @reports = Apis::Reports.new self
+      @reports = Apis::Reports::Api.new self
     end
 
     def get(path, params, overrides)

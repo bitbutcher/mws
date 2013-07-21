@@ -102,6 +102,27 @@ Example: Get the results for a submission:
 
 _For an example of putting it all together check out the 'scripts/catalog-workflow'_
 
+
+Access the Reports Api:
+
+    reports_api = mws.reports
+
+Get products from a specific seller (http://stackoverflow.com/questions/13477797/get-products-from-a-specific-seller-from-amazon-via-api):
+
+    reports_api.flat_file_open_listings_data.request
+    => "7589360560"   # returns report request id
+
+    reports_api.get_report_request("7589360560")
+    => nil   # returns nil until report is uncompleted
+
+    reports_api.get_report_request("7589360650")
+    => "11760935522"   # returns report_id when report is ready
+
+    reports_api.flat_file_open_listings_data.get("11760935522")
+    => [ {"sku"=>"GY-8IYT-2DCD", "asin"=>"B027DCI0D2", "price"=>"47.00", "quantity"=>"2"},
+         {"sku"=>"II-2561-BW36", "asin"=>"B104BUTEIO", "price"=>"39.00", "quantity"=>"3"} ]
+
+
 ## Contributing
 
 1. Fork it
