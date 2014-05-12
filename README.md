@@ -68,14 +68,14 @@ Example: Adding product images:
 
 Example: Setting product pricing: 
 
-    price_submission_id = mws.feeds.prices.add(
+    price_submission_id = mws.feeds.prices.update(
       Mws::PriceListing(sku, 14.99).on_sale(12.99, Time.now, 3.months.from_now)
     )
 
 Example: Overriding product shipping:
 
     sku = '12345678'
-    shipping_submission_id = mws.feeds.shipping.add(
+    shipping_submission_id = mws.feeds.shipping.update(
       Mws::Shipping sku {
         replace 'UPS Ground', 4.99
         adjust '2nd-Day Air', 7.00
@@ -84,7 +84,7 @@ Example: Overriding product shipping:
 
 Example: Setting product inventory:
 
-    inventory_submission_id = mws.feeds.inventory.add(
+    inventory_submission_id = mws.feeds.inventory.update(
         Mws::Inventory(sku, quantity: 10, fulfillment_type: :mfn)
     )
 

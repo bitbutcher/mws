@@ -4,16 +4,14 @@ module Mws
 
   describe Enum do
 
-    let (:options) do
-      {
-        pending: 'Pending',
-        unshipped: [ 'Unshipped', 'PartiallyShipped' ],
-        shipped: 'Shipped',
-        invoice_unconfirmed: 'InvoiceUnconfirmed',
-        cancelled: 'Cancelled',
-        unfulfillable: 'Unfulfillable'
-      }
-    end
+    options = {
+      pending: 'Pending',
+      unshipped: [ 'Unshipped', 'PartiallyShipped' ],
+      shipped: 'Shipped',
+      invoice_unconfirmed: 'InvoiceUnconfirmed',
+      cancelled: 'Cancelled',
+      unfulfillable: 'Unfulfillable'
+    }
 
     before(:all) do
       OrderStatus = Enum.for options

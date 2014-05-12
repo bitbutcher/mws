@@ -8,7 +8,7 @@ class Mws::Signer
   end
 
   def signature(query, secret=@secret)
-    digest = OpenSSL::Digest::Digest.new 'sha256'
+    digest = OpenSSL::Digest::SHA256.new
     message = [ @verb, @host, @path, query ].join "\n"
     Base64::encode64(OpenSSL::HMAC.digest(digest, secret, message)).chomp
   end
