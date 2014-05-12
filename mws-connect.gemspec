@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'mws-connect'
 
 Gem::Specification.new do |gem|
   gem.name          = 'mws-connect'
-  gem.version       = Mws::VERSION
+  gem.version       = '0.0.4'
   gem.authors       = ['Sean M. Duncan', 'John E. Bailey']
   gem.license       = 'MIT'
   gem.email         = ['info@devmode.com']
@@ -21,6 +20,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'cucumber'
   gem.add_development_dependency 'activesupport'
-  gem.add_dependency 'logging', '~> 1.8.0'
-  gem.add_dependency 'nokogiri', '~> 1.5.5'
+  gem.add_dependency 'logging', '>= 1.8.0'
+  gem.add_dependency 'nokogiri', '>= 1.5.5'
 end

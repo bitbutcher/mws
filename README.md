@@ -68,7 +68,7 @@ Example: Adding product images:
 
 Example: Setting product pricing: 
 
-    price_submission_id = mws.feeds.prices.add(
+    price_submission_id = mws.feeds.prices.update(
       Mws::PriceListing(sku, 14.99).on_sale(12.99, Time.now, 3.months.from_now)
     )
 
