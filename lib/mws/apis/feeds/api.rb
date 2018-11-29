@@ -17,8 +17,10 @@ module Mws::Apis::Feeds
       @inventory = self.for :inventory
     end
 
-    def get(id)
-      node = @connection.get '/', { feed_submission_id: id }, @defaults.merge(
+    def get(id, auth_token = nil)
+      params = { feed_submission_id: id }
+      params[:m_w_s_auth_token] = auth_token if auth_token.present?
+      node = @connection.get '/', params, @defaults.merge(
         action: 'GetFeedSubmissionResult',
         xpath: 'AmazonEnvelope/Message'
       )
